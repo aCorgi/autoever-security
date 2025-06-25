@@ -4,6 +4,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.task.autoeversecurity.dto.UserCreationRequest
 import com.task.autoeversecurity.exception.ClientBadRequestException
 import com.task.autoeversecurity.repository.UserRepository
+import com.task.autoeversecurity.util.AES256Encryptor
 import com.task.autoeversecurity.util.Constants.Exception.DUPLICATE_LOGIN_ID_EXCEPTION_MESSAGE
 import com.task.autoeversecurity.util.Constants.Exception.DUPLICATE_RRN_EXCEPTION_MESSAGE
 import com.task.autoeversecurity.util.Constants.Exception.IMPOSSIBLE_PHONE_NUMBER_EXCEPTION_MESSAGE
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class UserService(
     private val userRepository: UserRepository,
+    private val aes256Encryptor: AES256Encryptor,
 ) {
     @Transactional
     fun join(request: UserCreationRequest) {
@@ -34,9 +36,10 @@ class UserService(
             }
 
         // 패스워드 암호화
+        val encryptedPassword = aes256Encryptor.encrypt(request.password)
 
         // User 엔티티 생성 및 저장
-        userRepository.save(request.toEntity())
+        userRepository.save(request.toEntity(encryptedPassword))
     }
 
     private fun validatePhoneNumber(phoneNumber: String) {

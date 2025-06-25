@@ -4,6 +4,7 @@ import com.task.autoeversecurity.config.UnitTestBase
 import com.task.autoeversecurity.dto.UserCreationRequest
 import com.task.autoeversecurity.exception.ClientBadRequestException
 import com.task.autoeversecurity.repository.UserRepository
+import com.task.autoeversecurity.util.AES256Encryptor
 import com.task.autoeversecurity.util.Constants.Exception.DUPLICATE_LOGIN_ID_EXCEPTION_MESSAGE
 import com.task.autoeversecurity.util.Constants.Exception.DUPLICATE_RRN_EXCEPTION_MESSAGE
 import org.junit.jupiter.api.Nested
@@ -22,6 +23,9 @@ class UserServiceTest : UnitTestBase() {
 
     @Mock
     private lateinit var userRepository: UserRepository
+
+    @Mock
+    private lateinit var aes256Encryptor: AES256Encryptor
 
     @Nested
     inner class `회원가입` {
@@ -50,8 +54,10 @@ class UserServiceTest : UnitTestBase() {
                     .thenReturn(null)
                 whenever(userRepository.findByRrn(rrn))
                     .thenReturn(null)
+                whenever(aes256Encryptor.encrypt(userCreationRequest.password))
+                    .thenReturn("encryptedPassword")
                 whenever(userRepository.save(Mockito.any()))
-                    .thenReturn(userCreationRequest.toEntity())
+                    .thenReturn(userCreationRequest.toEntity("encryptedPassword"))
 
                 // when & then
                 assertDoesNotThrow {
@@ -80,9 +86,10 @@ class UserServiceTest : UnitTestBase() {
                         phoneNumber = phoneNumber,
                         address = address,
                     )
+                val encryptedPassword = "encryptedPassword"
 
                 whenever(userRepository.findByLoginId(loginId))
-                    .thenReturn(userCreationRequest.toEntity())
+                    .thenReturn(userCreationRequest.toEntity(encryptedPassword))
 
                 // when & then
                 assertThrows<ClientBadRequestException> {
@@ -109,11 +116,12 @@ class UserServiceTest : UnitTestBase() {
                         phoneNumber = phoneNumber,
                         address = address,
                     )
+                val encryptedPassword = "encryptedPassword"
 
                 whenever(userRepository.findByLoginId(loginId))
                     .thenReturn(null)
                 whenever(userRepository.findByRrn(rrn))
-                    .thenReturn(userCreationRequest.toEntity())
+                    .thenReturn(userCreationRequest.toEntity(encryptedPassword))
 
                 // when & then
                 assertThrows<ClientBadRequestException> {

@@ -10,10 +10,10 @@ data class UserCreationRequest(
     val phoneNumber: String,
     val address: String,
 ) {
-    fun toEntity(): User {
+    fun toEntity(encryptedPassword: String): User {
         return User(
             loginId = loginId,
-            password = password,
+            password = encryptedPassword,
             name = name,
             rrn = rrn,
             phoneNumber = phoneNumber,
