@@ -1,0 +1,18 @@
+version: "3.8"
+services:
+  mysql:
+    image: mysql:8.0.42
+    container_name: mysql-local
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: corgi
+      MYSQL_DATABASE: autoever
+    ports:
+      - "3306:3306"
+
+  redis:
+    image: redis:7
+    container_name: redis-local
+    restart: always
+    ports:
+      - "6379:6379"

@@ -3,11 +3,11 @@ spring:
     virtual:
       enabled: true
   datasource:
-    url: jdbc:h2:mem:testdb
-    # prod 환경에서는 암호화
-    username: haewon
-    password: 000685
-    driver-class-name: org.h2.Driver
+    url: jdbc:mysql://localhost:3306/autoever?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+    username: root
+    # prod 환경에서는 해당 값 secret value
+    password: ${AUTOEVER_DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
       # prod 환경에서는 in-memory DB 가 아니라는 전제 하에 create 대신 validate 수행
