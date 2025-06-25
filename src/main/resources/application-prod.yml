@@ -10,7 +10,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      # prod 환경에서는 in-memory DB 가 아니라는 전제 하에 create 대신 validate 수행
+      # prod 환경에서는 이미 DB 가 존재한다는 전제 하에 validate 수행
       ddl-auto: validate
   h2:
     console:

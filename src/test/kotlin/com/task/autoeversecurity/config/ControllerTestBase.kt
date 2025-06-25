@@ -2,9 +2,9 @@ package com.task.autoeversecurity.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.task.autoeversecurity.AutoeverSecurityApplication
-import com.task.autoeversecurity.controller.AuthController
+import com.task.autoeversecurity.controller.UserController
 import com.task.autoeversecurity.exception.ExceptionHandler
-import com.task.autoeversecurity.service.AuthService
+import com.task.autoeversecurity.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.MockMvc
 
 @WebMvcTest(
     value = [
-        AuthController::class,
+        UserController::class,
     ],
 )
 @ActiveProfiles("test")
@@ -37,5 +37,5 @@ abstract class ControllerTestBase {
     protected lateinit var objectMapper: ObjectMapper
 
     @MockitoBean
-    protected lateinit var authService: AuthService
+    protected lateinit var userService: UserService
 }
