@@ -38,4 +38,12 @@ class User(
     @Column(nullable = false, length = 200)
     var address: String = address
         protected set
+
+    fun updatePassword(password: String) {
+        this.password = password
+    }
+
+    fun updateAddress(address: String) {
+        this.address = address
+    }
 }

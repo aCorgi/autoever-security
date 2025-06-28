@@ -1,7 +1,7 @@
 package com.task.autoeversecurity.controller
 
 import com.task.autoeversecurity.config.ControllerTestBase
-import com.task.autoeversecurity.dto.UserCreationRequest
+import com.task.autoeversecurity.dto.UserJoinRequest
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
@@ -10,7 +10,7 @@ import org.springframework.test.web.servlet.post
 class UserControllerIT : ControllerTestBase() {
     @Nested
     inner class `회원 가입` {
-        private val url = "/users"
+        private val url = "/users/join"
 
         @Nested
         inner class `성공` {
@@ -18,7 +18,7 @@ class UserControllerIT : ControllerTestBase() {
             fun `회원가입 성공 시 201 CREATED 를 반환한다`() {
                 // given
                 val request =
-                    UserCreationRequest(
+                    UserJoinRequest(
                         loginId = "testUser",
                         password = "securePassword123",
                         name = "John Doe",

@@ -2,7 +2,8 @@ package com.task.autoeversecurity.dto
 
 import com.task.autoeversecurity.domain.entity.User
 
-data class UserCreationRequest(
+// TODO: spring validation 추가
+data class UserJoinRequest(
     val loginId: String,
     val password: String,
     val name: String,
@@ -21,3 +22,9 @@ data class UserCreationRequest(
         )
     }
 }
+
+// TODO: spring validation 추가
+data class UserLoginRequest(
+    val loginId: String,
+    val password: String,
+)

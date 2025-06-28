@@ -1,7 +1,7 @@
 package com.task.autoeversecurity.service
 
 import com.task.autoeversecurity.config.UnitTestBase
-import com.task.autoeversecurity.dto.UserCreationRequest
+import com.task.autoeversecurity.dto.UserJoinRequest
 import com.task.autoeversecurity.exception.ClientBadRequestException
 import com.task.autoeversecurity.repository.UserRepository
 import com.task.autoeversecurity.util.AES256Encryptor
@@ -40,8 +40,8 @@ class UserServiceTest : UnitTestBase() {
                 val rrn = "9101011234924"
                 val phoneNumber = "01012345678"
                 val address = "Seoul, Korea"
-                val userCreationRequest =
-                    UserCreationRequest(
+                val userJoinRequest =
+                    UserJoinRequest(
                         loginId = loginId,
                         password = password,
                         name = name,
@@ -54,14 +54,14 @@ class UserServiceTest : UnitTestBase() {
                     .thenReturn(null)
                 whenever(userRepository.findByRrn(rrn))
                     .thenReturn(null)
-                whenever(aes256Encryptor.encrypt(userCreationRequest.password))
+                whenever(aes256Encryptor.encrypt(userJoinRequest.password))
                     .thenReturn("encryptedPassword")
                 whenever(userRepository.save(Mockito.any()))
-                    .thenReturn(userCreationRequest.toEntity("encryptedPassword"))
+                    .thenReturn(userJoinRequest.toEntity("encryptedPassword"))
 
                 // when & then
                 assertDoesNotThrow {
-                    userService.join(userCreationRequest)
+                    userService.join(userJoinRequest)
                 }
             }
         }
@@ -77,8 +77,8 @@ class UserServiceTest : UnitTestBase() {
                 val rrn = "9101011234924"
                 val phoneNumber = "01012345678"
                 val address = "Seoul, Korea"
-                val userCreationRequest =
-                    UserCreationRequest(
+                val userJoinRequest =
+                    UserJoinRequest(
                         loginId = loginId,
                         password = password,
                         name = name,
@@ -89,11 +89,11 @@ class UserServiceTest : UnitTestBase() {
                 val encryptedPassword = "encryptedPassword"
 
                 whenever(userRepository.findByLoginId(loginId))
-                    .thenReturn(userCreationRequest.toEntity(encryptedPassword))
+                    .thenReturn(userJoinRequest.toEntity(encryptedPassword))
 
                 // when & then
                 assertThrows<ClientBadRequestException> {
-                    userService.join(userCreationRequest)
+                    userService.join(userJoinRequest)
                 }
                     .also { assertEquals(it.message, DUPLICATE_LOGIN_ID_EXCEPTION_MESSAGE) }
             }
@@ -107,8 +107,8 @@ class UserServiceTest : UnitTestBase() {
                 val rrn = "9101011234924"
                 val phoneNumber = "01012345678"
                 val address = "Seoul, Korea"
-                val userCreationRequest =
-                    UserCreationRequest(
+                val userJoinRequest =
+                    UserJoinRequest(
                         loginId = loginId,
                         password = password,
                         name = name,
@@ -121,11 +121,11 @@ class UserServiceTest : UnitTestBase() {
                 whenever(userRepository.findByLoginId(loginId))
                     .thenReturn(null)
                 whenever(userRepository.findByRrn(rrn))
-                    .thenReturn(userCreationRequest.toEntity(encryptedPassword))
+                    .thenReturn(userJoinRequest.toEntity(encryptedPassword))
 
                 // when & then
                 assertThrows<ClientBadRequestException> {
-                    userService.join(userCreationRequest)
+                    userService.join(userJoinRequest)
                 }
                     .also { assertEquals(it.message, DUPLICATE_RRN_EXCEPTION_MESSAGE) }
             }

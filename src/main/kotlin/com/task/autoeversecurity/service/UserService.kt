@@ -1,8 +1,11 @@
 package com.task.autoeversecurity.service
 
 import com.google.i18n.phonenumbers.PhoneNumberUtil
-import com.task.autoeversecurity.dto.UserCreationRequest
+import com.task.autoeversecurity.domain.entity.User
+import com.task.autoeversecurity.dto.UserJoinRequest
+import com.task.autoeversecurity.dto.UserLoginRequest
 import com.task.autoeversecurity.exception.ClientBadRequestException
+import com.task.autoeversecurity.exception.ResourceNotFoundException
 import com.task.autoeversecurity.repository.UserRepository
 import com.task.autoeversecurity.util.AES256Encryptor
 import com.task.autoeversecurity.util.Constants.Exception.DUPLICATE_LOGIN_ID_EXCEPTION_MESSAGE
@@ -11,6 +14,9 @@ import com.task.autoeversecurity.util.Constants.Exception.IMPOSSIBLE_PHONE_NUMBE
 import com.task.autoeversecurity.util.Constants.Exception.INVALID_RRN_FORMAT_EXCEPTION_MESSAGE
 import com.task.autoeversecurity.util.Constants.Exception.RRN_CONTAINS_HYPHEN_EXCEPTION_MESSAGE
 import com.task.autoeversecurity.util.Constants.Exception.RRN_LENGTH_INVALID_EXCEPTION_MESSAGE
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -21,7 +27,7 @@ class UserService(
     private val aes256Encryptor: AES256Encryptor,
 ) {
     @Transactional
-    fun join(request: UserCreationRequest) {
+    fun join(request: UserJoinRequest) {
         validatePhoneNumber(request.phoneNumber)
         validateRrn(request.rrn)
 
@@ -40,6 +46,26 @@ class UserService(
 
         // User 엔티티 생성 및 저장
         userRepository.save(request.toEntity(encryptedPassword))
+    }
+
+    fun findById(id: Int): User {
+        return userRepository.findByIdOrNull(id)
+            ?: throw ResourceNotFoundException("사용자를 찾을 수 없습니다.")
+    }
+
+    @Transactional
+    fun deleteById(id: Int) {
+        findById(id)
+
+        userRepository.deleteById(id)
+    }
+
+    fun login(request: UserLoginRequest) {
+        // TODO: auth token 발급
+    }
+
+    fun getPagedUsers(pageable: Pageable): Page<User> {
+        return userRepository.findAll(pageable)
     }
 
     private fun validatePhoneNumber(phoneNumber: String) {
