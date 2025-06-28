@@ -12,5 +12,7 @@ object Constants {
         const val DUPLICATE_RRN_EXCEPTION_MESSAGE = "이미 사용 중인 주민등록번호입니다."
     }
 
+    const val BASIC_AUTH_USERS_REDIS_KEY = "basic_auth_users"
+
     const val AES_ALGORITHM = "AES"
 }
