@@ -1,14 +1,29 @@
 package com.task.autoeversecurity.config
 
+import com.task.autoeversecurity.repository.redis.BasicAuthUserRepository
 import com.task.autoeversecurity.util.BasicAuthUsers
+import com.task.autoeversecurity.util.Constants.Redis.BASIC_AUTH_USERS_CHANNEL
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.connection.RedisConnectionFactory
 import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.listener.ChannelTopic
+import org.springframework.data.redis.listener.RedisMessageListenerContainer
 import org.springframework.data.redis.serializer.StringRedisSerializer
 
 @Configuration
-class RedisConfiguration {
+class RedisConfiguration(
+    private val basicAuthUserRepository: BasicAuthUserRepository,
+) {
+    @Bean
+    fun redisMessageListener(connectionFactory: RedisConnectionFactory): RedisMessageListenerContainer {
+        val container = RedisMessageListenerContainer()
+        container.setConnectionFactory(connectionFactory)
+        container.addMessageListener(basicAuthUserRepository, ChannelTopic(BASIC_AUTH_USERS_CHANNEL))
+
+        return container
+    }
+
     @Bean
     fun basicAuthUsersRedisTemplate(connectionFactory: RedisConnectionFactory): RedisTemplate<String, BasicAuthUsers> {
         val template = RedisTemplate<String, BasicAuthUsers>()

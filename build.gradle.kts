@@ -1,3 +1,5 @@
+val testContainersVersion: String by project
+
 plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
@@ -45,6 +47,20 @@ dependencies {
 
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
+
+    testImplementation("com.squareup.okhttp3:okhttp:4.12.0")
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
+
+    testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
+    testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
+    testImplementation("org.testcontainers:mysql:$testContainersVersion")
+    testImplementation("org.testcontainers:kafka:$testContainersVersion")
+    testImplementation("org.awaitility:awaitility:4.2.2")
+    testRuntimeOnly("mysql:mysql-connector-java:8.0.32")
 }
 
 kotlin {
