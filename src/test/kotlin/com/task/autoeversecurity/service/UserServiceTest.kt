@@ -4,7 +4,6 @@ import com.task.autoeversecurity.config.UnitTestBase
 import com.task.autoeversecurity.dto.UserJoinRequest
 import com.task.autoeversecurity.exception.ClientBadRequestException
 import com.task.autoeversecurity.repository.UserRepository
-import com.task.autoeversecurity.util.AES256Encryptor
 import com.task.autoeversecurity.util.Constants.Exception.DUPLICATE_LOGIN_ID_EXCEPTION_MESSAGE
 import com.task.autoeversecurity.util.Constants.Exception.DUPLICATE_RRN_EXCEPTION_MESSAGE
 import org.junit.jupiter.api.Nested

@@ -7,7 +7,6 @@ import com.task.autoeversecurity.dto.UserLoginRequest
 import com.task.autoeversecurity.exception.ClientBadRequestException
 import com.task.autoeversecurity.exception.ResourceNotFoundException
 import com.task.autoeversecurity.repository.UserRepository
-import com.task.autoeversecurity.util.AES256Encryptor
 import com.task.autoeversecurity.util.Constants.Exception.DUPLICATE_LOGIN_ID_EXCEPTION_MESSAGE
 import com.task.autoeversecurity.util.Constants.Exception.DUPLICATE_RRN_EXCEPTION_MESSAGE
 import com.task.autoeversecurity.util.Constants.Exception.IMPOSSIBLE_PHONE_NUMBER_EXCEPTION_MESSAGE
@@ -17,6 +16,7 @@ import com.task.autoeversecurity.util.Constants.Exception.RRN_LENGTH_INVALID_EXC
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class UserService(
     private val userRepository: UserRepository,
-    private val aes256Encryptor: AES256Encryptor,
+    private val passwordEncoder: PasswordEncoder,
 ) {
     @Transactional
     fun join(request: UserJoinRequest) {
@@ -42,7 +42,7 @@ class UserService(
             }
 
         // 패스워드 암호화
-        val encryptedPassword = aes256Encryptor.encrypt(request.password)
+        val encryptedPassword = passwordEncoder.encode(request.password)
 
         // User 엔티티 생성 및 저장
         userRepository.save(request.toEntity(encryptedPassword))

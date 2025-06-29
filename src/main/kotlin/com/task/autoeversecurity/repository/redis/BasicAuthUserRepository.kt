@@ -18,7 +18,7 @@ class BasicAuthUserRepository(
     }
 
     fun getBasicAuthUsersByNameOrNull(username: String): String? {
-        return getBasicAuthUsers().get(username)
+        return getBasicAuthUsers()[username]
     }
 
     private fun getBasicAuthUsers(): BasicAuthUsers {

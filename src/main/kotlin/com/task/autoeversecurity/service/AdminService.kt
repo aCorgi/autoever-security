@@ -2,9 +2,9 @@ package com.task.autoeversecurity.service
 
 import com.task.autoeversecurity.dto.UserResponse
 import com.task.autoeversecurity.dto.UserUpdateRequest
-import com.task.autoeversecurity.util.AES256Encryptor
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class AdminService(
     private val userService: UserService,
-    private val aes256Encryptor: AES256Encryptor,
+    private val passwordEncoder: PasswordEncoder,
 ) {
     fun getPagedUsers(pageable: Pageable): Page<UserResponse> {
         return userService.getPagedUsers(pageable)
@@ -24,7 +24,7 @@ class AdminService(
         val user = userService.findById(request.userId)
 
         request.password?.let {
-            user.updatePassword(password = aes256Encryptor.encrypt(it))
+            user.updatePassword(password = passwordEncoder.encode(it))
         }
 
         request.address?.let {
