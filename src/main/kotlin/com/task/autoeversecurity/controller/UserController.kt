@@ -30,7 +30,7 @@ class UserController(
     @PostMapping("/login")
     fun login(
         @RequestBody request: UserLoginRequest,
-    ) {
-        userService.login(request)
+    ): String {
+        return userService.login(request)
     }
 }

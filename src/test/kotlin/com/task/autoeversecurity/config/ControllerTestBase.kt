@@ -45,6 +45,7 @@ import org.springframework.test.web.servlet.MockMvc
         ExceptionHandler::class,
         PasswordConfiguration::class,
         SecurityConfiguration::class,
+        TestBasicAuthenticationProvider::class,
     ],
 )
 abstract class ControllerTestBase {

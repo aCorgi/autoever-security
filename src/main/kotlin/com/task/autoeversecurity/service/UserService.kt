@@ -7,6 +7,7 @@ import com.task.autoeversecurity.dto.UserLoginRequest
 import com.task.autoeversecurity.exception.ClientBadRequestException
 import com.task.autoeversecurity.exception.ResourceNotFoundException
 import com.task.autoeversecurity.repository.UserRepository
+import com.task.autoeversecurity.util.CommonUtils.getBasicAuthToken
 import com.task.autoeversecurity.util.Constants.Exception.DUPLICATE_LOGIN_ID_EXCEPTION_MESSAGE
 import com.task.autoeversecurity.util.Constants.Exception.DUPLICATE_RRN_EXCEPTION_MESSAGE
 import com.task.autoeversecurity.util.Constants.Exception.IMPOSSIBLE_PHONE_NUMBER_EXCEPTION_MESSAGE
@@ -60,8 +61,16 @@ class UserService(
         userRepository.deleteById(id)
     }
 
-    fun login(request: UserLoginRequest) {
-        // TODO: auth token 발급
+    fun login(request: UserLoginRequest): String {
+        userRepository.findByLoginId(request.loginId)
+            ?.let {
+                if (passwordEncoder.matches(request.password, it.password).not()) {
+                    throw ClientBadRequestException("비밀번호가 일치하지 않습니다.")
+                }
+            }
+            ?: throw ResourceNotFoundException("사용자를 찾을 수 없습니다.")
+
+        return getBasicAuthToken(request.loginId, request.password)
     }
 
     fun getPagedUsers(pageable: Pageable): Page<User> {

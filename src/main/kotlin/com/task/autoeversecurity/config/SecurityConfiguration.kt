@@ -27,6 +27,8 @@ class SecurityConfiguration(
                 authorize
                     .requestMatchers(*permitUris())
                     .permitAll()
+                    .requestMatchers("/users/login", "/users/join")
+                    .permitAll()
                     .requestMatchers("/admins/**", "/users/**")
                     .authenticated()
             }
