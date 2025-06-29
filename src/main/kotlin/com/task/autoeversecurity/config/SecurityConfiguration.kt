@@ -2,6 +2,7 @@ package com.task.autoeversecurity.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -10,7 +11,9 @@ import org.springframework.security.web.SecurityFilterChain
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfiguration {
+class SecurityConfiguration(
+    private val basicAuthenticationProvider: AuthenticationProvider,
+) {
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
@@ -19,14 +22,13 @@ class SecurityConfiguration {
             .formLogin { formLoginSpec -> formLoginSpec.disable() }
             .logout { logoutSpec -> logoutSpec.disable() }
             .headers { headerSpec -> headerSpec.frameOptions { customizer -> customizer.disable() } }
+            .authenticationProvider(basicAuthenticationProvider)
             .authorizeHttpRequests { authorize ->
                 authorize
                     .requestMatchers(*permitUris())
                     .permitAll()
-                    .requestMatchers("/admins/**")
+                    .requestMatchers("/admins/**", "/users/**")
                     .authenticated()
-                    .anyRequest()
-                    .permitAll()
             }
             .httpBasic(Customizer.withDefaults())
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }

@@ -3,25 +3,12 @@ package com.task.autoeversecurity.repository.redis
 import com.task.autoeversecurity.util.BasicAuthUsers
 import com.task.autoeversecurity.util.Constants.Redis.BASIC_AUTH_USERS_REDIS_KEY
 import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.security.core.userdetails.User
-import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.stereotype.Repository
 
 @Repository
 class BasicAuthUserRepository(
     private val redisTemplate: RedisTemplate<String, String>,
-    private val inMemoryUserDetailsManager: InMemoryUserDetailsManager,
 ) {
-    fun addAllBasicAuthUsersInUserDetailsManager() {
-        getBasicAuthUsers().map { (username, password) ->
-            val userDetail = User(username, password, emptyList())
-
-            if ((inMemoryUserDetailsManager as InMemoryUserDetailsManager).userExists(username).not()) {
-                inMemoryUserDetailsManager.createUser(userDetail)
-            }
-        }
-    }
-
     fun setAdminInBasicAuthUsers(
         name: String,
         password: String,
@@ -30,7 +17,11 @@ class BasicAuthUserRepository(
             .put(BASIC_AUTH_USERS_REDIS_KEY, name, password)
     }
 
-    fun getBasicAuthUsers(): BasicAuthUsers {
+    fun getBasicAuthUsersByNameOrNull(username: String): String? {
+        return getBasicAuthUsers().get(username)
+    }
+
+    private fun getBasicAuthUsers(): BasicAuthUsers {
         return redisTemplate.opsForHash<String, String>()
             .entries(BASIC_AUTH_USERS_REDIS_KEY)
     }
