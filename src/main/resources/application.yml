@@ -42,6 +42,11 @@ management:
       exposure:
         include: health
 
+basic-auth:
+  admin:
+    username: admin
+    password: $2a$10$Qz49ajcCn2kdVuQesmsrPusnBQzq1QMHGBplKzsGqjSt1r4yOlXXC
+
 aes:
   iv-size: 16
   secret-key: "0123456789abcdef0123456789fedcba"

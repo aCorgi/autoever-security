@@ -16,7 +16,7 @@ class BasicAuthUserRepository(
         getBasicAuthUsers().map { (username, password) ->
             val userDetail = User(username, password, emptyList())
 
-            if (!inMemoryUserDetailsManager.userExists(username)) {
+            if ((inMemoryUserDetailsManager as InMemoryUserDetailsManager).userExists(username).not()) {
                 inMemoryUserDetailsManager.createUser(userDetail)
             }
         }
@@ -27,7 +27,7 @@ class BasicAuthUserRepository(
         password: String,
     ) {
         redisTemplate.opsForHash<String, String>()
-            .putIfAbsent(BASIC_AUTH_USERS_REDIS_KEY, name, password)
+            .put(BASIC_AUTH_USERS_REDIS_KEY, name, password)
     }
 
     fun getBasicAuthUsers(): BasicAuthUsers {

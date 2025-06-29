@@ -42,3 +42,8 @@ management:
     web:
       exposure:
         include: health
+
+basic-auth:
+  admin:
+    username: admin
+    password: $2a$10$Qz49ajcCn2kdVuQesmsrPusnBQzq1QMHGBplKzsGqjSt1r4yOlXXC
