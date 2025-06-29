@@ -5,7 +5,7 @@ import com.task.autoeversecurity.domain.entity.User
 data class UserUpdateRequest(
     val userId: Int,
     val password: String?,
-    val address: String?,
+    val address: AddressDto?,
 )
 
 data class UserDeleteRequest(
@@ -19,7 +19,7 @@ data class UserResponse(
     val name: String,
     val rrn: String,
     val phoneNumber: String,
-    val address: String,
+    val address: AddressDto,
 ) {
     constructor(user: User) : this(
         id = user.id,
@@ -28,6 +28,6 @@ data class UserResponse(
         name = user.name,
         rrn = user.rrn,
         phoneNumber = user.phoneNumber,
-        address = user.address,
+        address = AddressDto(user.address),
     )
 }

@@ -9,7 +9,7 @@ data class UserJoinRequest(
     val name: String,
     val rrn: String,
     val phoneNumber: String,
-    val address: String,
+    val address: AddressDto,
 ) {
     fun toEntity(encryptedPassword: String): User {
         return User(
@@ -18,7 +18,7 @@ data class UserJoinRequest(
             name = name,
             rrn = rrn,
             phoneNumber = phoneNumber,
-            address = address,
+            address = address.toEmbeddable(),
         )
     }
 }

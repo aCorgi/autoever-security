@@ -28,7 +28,7 @@ class AdminService(
         }
 
         request.address?.let {
-            user.updateAddress(it)
+            user.updateAddress(it.toEmbeddable())
         }
     }
 

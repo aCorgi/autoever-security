@@ -1,7 +1,9 @@
 package com.task.autoeversecurity.domain.entity
 
 import com.task.autoeversecurity.domain.BaseEntity
+import com.task.autoeversecurity.domain.embeddable.Address
 import jakarta.persistence.Column
+import jakarta.persistence.Embedded
 import jakarta.persistence.Entity
 import jakarta.persistence.Index
 import jakarta.persistence.Table
@@ -25,7 +27,7 @@ class User(
     @Column(nullable = false, length = 50)
     val rrn: String,
     phoneNumber: String,
-    address: String,
+    address: Address,
 ) : BaseEntity() {
     @Column(nullable = false, length = 500)
     var password: String = password
@@ -35,15 +37,15 @@ class User(
     var phoneNumber: String = phoneNumber
         protected set
 
-    @Column(nullable = false, length = 200)
-    var address: String = address
+    @Embedded
+    var address: Address = address
         protected set
 
     fun updatePassword(password: String) {
         this.password = password
     }
 
-    fun updateAddress(address: String) {
+    fun updateAddress(address: Address) {
         this.address = address
     }
 }
