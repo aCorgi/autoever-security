@@ -13,6 +13,8 @@ object Constants {
     }
 
     const val AES_ALGORITHM = "AES"
+    const val BASIC_AUTH_ADMIN_NAME = "admin"
+    const val BASIC_AUTH_ADMIN_PASSWORD = "\$2a\$10\$3CdYNiQ1lGg58zVBsnD05eMWD6I4mzcixHHmS/0nf4TtfE7oObnDq"
 
     object Redis {
         const val BASIC_AUTH_USERS_REDIS_KEY = "BASIC_AUTH_USERS"

@@ -3,15 +3,14 @@ package com.task.autoeversecurity.config
 import com.task.autoeversecurity.repository.redis.BasicAuthUserRepository
 import com.task.autoeversecurity.util.TestConstants.BASIC_AUTH_PASSWORD
 import com.task.autoeversecurity.util.TestConstants.BASIC_AUTH_USERNAME
-import kr.socar.b2b.constant.TestConstant.BASIC_AUTH_PASSWORD
-import kr.socar.b2b.constant.TestConstant.BASIC_AUTH_USERNAME
-import kr.socar.b2b.repository.BasicAuthUserRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 
 class UserDetailServicesConfigurationIT : IntegrationTestBase() {
@@ -28,6 +27,8 @@ class UserDetailServicesConfigurationIT : IntegrationTestBase() {
     fun `userDetailsService 에서 불러온 정보 기반으로 암호 인증에 성공한다`() {
         whenever(basicAuthUserRepository.getBasicAuthUsers())
             .thenReturn(mapOf(BASIC_AUTH_USERNAME to passwordEncoder.encode(BASIC_AUTH_PASSWORD)))
+
+        InMemoryUserDetailsManager(User(BASIC_AUTH_USERNAME, passwordEncoder.encode(BASIC_AUTH_PASSWORD), emptyList()))
 
         val user = userDetailsService.loadUserByUsername(BASIC_AUTH_USERNAME)
 
