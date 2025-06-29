@@ -1,7 +1,9 @@
 package com.task.autoeversecurity.service
 
 import com.google.i18n.phonenumbers.PhoneNumberUtil
+import com.task.autoeversecurity.config.AutoeverMember
 import com.task.autoeversecurity.domain.entity.User
+import com.task.autoeversecurity.dto.MyselfUserResponse
 import com.task.autoeversecurity.dto.UserJoinRequest
 import com.task.autoeversecurity.dto.UserLoginRequest
 import com.task.autoeversecurity.exception.ClientBadRequestException
@@ -29,6 +31,12 @@ class UserService(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
 ) {
+    fun getMyself(autoeverMember: AutoeverMember): MyselfUserResponse {
+        val user = findById(autoeverMember.userId)
+
+        return MyselfUserResponse(user)
+    }
+
     @Transactional
     fun join(request: UserJoinRequest) {
         validatePhoneNumber(request.phoneNumber)
@@ -53,7 +61,12 @@ class UserService(
 
     fun findById(id: Int): User {
         return userRepository.findByIdOrNull(id)
-            ?: throw ResourceNotFoundException("사용자를 찾을 수 없습니다.")
+            ?: throw ResourceNotFoundException(USER_NOT_FOUND_EXCEPTION_MESSAGE)
+    }
+
+    fun findByLoginId(loginId: String): User {
+        return userRepository.findByLoginId(loginId)
+            ?: throw ResourceNotFoundException(USER_NOT_FOUND_EXCEPTION_MESSAGE)
     }
 
     @Transactional
@@ -64,13 +77,11 @@ class UserService(
     }
 
     fun login(request: UserLoginRequest): String {
-        userRepository.findByLoginId(request.loginId)
-            ?.let {
-                if (passwordEncoder.matches(request.password, it.password).not()) {
-                    throw ClientBadRequestException(PASSWORD_MISMATCH_EXCEPTION_MESSAGE)
-                }
-            }
-            ?: throw ResourceNotFoundException(USER_NOT_FOUND_EXCEPTION_MESSAGE)
+        val user = findByLoginId(request.loginId)
+
+        if (passwordEncoder.matches(request.password, user.password).not()) {
+            throw ClientBadRequestException(PASSWORD_MISMATCH_EXCEPTION_MESSAGE)
+        }
 
         return getBasicAuthToken(request.loginId, request.password)
     }

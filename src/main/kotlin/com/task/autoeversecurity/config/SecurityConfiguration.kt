@@ -29,7 +29,11 @@ class SecurityConfiguration(
                     .permitAll()
                     .requestMatchers("/users/login", "/users/join")
                     .permitAll()
-                    .requestMatchers("/admins/**", "/users/**")
+                    .requestMatchers("/admins/**")
+                    .hasAuthority(AutoeverAuthority.ADMIN.authority)
+                    .requestMatchers("/users/**")
+                    .hasAuthority(AutoeverAuthority.USER.authority)
+                    .anyRequest()
                     .authenticated()
             }
             .httpBasic(Customizer.withDefaults())

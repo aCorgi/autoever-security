@@ -1,6 +1,6 @@
 package com.task.autoeversecurity.config
 
-import com.task.autoeversecurity.repository.redis.BasicAuthUserRepository
+import com.task.autoeversecurity.repository.redis.BasicAuthAdminRepository
 import com.task.autoeversecurity.util.TestConstants.BASIC_AUTH_PASSWORD
 import com.task.autoeversecurity.util.TestConstants.BASIC_AUTH_USERNAME
 import org.assertj.core.api.Assertions.assertThat
@@ -12,7 +12,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 
 class UserDetailServicesConfigurationIT : IntegrationTestBase() {
     @MockitoBean
-    private lateinit var basicAuthUserRepository: BasicAuthUserRepository
+    private lateinit var basicAuthAdminRepository: BasicAuthAdminRepository
 
     @Autowired
     private lateinit var passwordEncoder: PasswordEncoder

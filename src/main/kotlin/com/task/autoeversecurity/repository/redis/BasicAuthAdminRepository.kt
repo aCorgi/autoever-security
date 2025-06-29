@@ -6,10 +6,10 @@ import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Repository
 
 @Repository
-class BasicAuthUserRepository(
+class BasicAuthAdminRepository(
     private val redisTemplate: RedisTemplate<String, String>,
 ) {
-    fun setAdminInBasicAuthUsers(
+    fun setAdminInRedis(
         name: String,
         password: String,
     ) {
@@ -17,11 +17,11 @@ class BasicAuthUserRepository(
             .put(BASIC_AUTH_USERS_REDIS_KEY, name, password)
     }
 
-    fun getBasicAuthUsersByNameOrNull(username: String): String? {
-        return getBasicAuthUsers()[username]
+    fun getBasicAuthAdminsByNameOrNull(username: String): String? {
+        return getBasicAuthAdmins()[username]
     }
 
-    private fun getBasicAuthUsers(): BasicAuthUsers {
+    private fun getBasicAuthAdmins(): BasicAuthUsers {
         return redisTemplate.opsForHash<String, String>()
             .entries(BASIC_AUTH_USERS_REDIS_KEY)
     }
