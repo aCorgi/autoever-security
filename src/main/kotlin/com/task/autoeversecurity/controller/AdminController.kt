@@ -4,6 +4,7 @@ import com.task.autoeversecurity.dto.UserDeleteRequest
 import com.task.autoeversecurity.dto.UserResponse
 import com.task.autoeversecurity.dto.UserUpdateRequest
 import com.task.autoeversecurity.service.AdminService
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 @Validated
 @RestController
 @RequestMapping("/admins")
+@SecurityRequirement(name = "basicAuth")
 class AdminController(
     private val adminService: AdminService,
 ) {
