@@ -13,6 +13,7 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.kotlin.whenever
+import org.springframework.security.crypto.password.PasswordEncoder
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -24,7 +25,7 @@ class UserServiceTest : UnitTestBase() {
     private lateinit var userRepository: UserRepository
 
     @Mock
-    private lateinit var aes256Encryptor: AES256Encryptor
+    private lateinit var passwordEncoder: PasswordEncoder
 
     @Nested
     inner class `회원가입` {
@@ -53,7 +54,7 @@ class UserServiceTest : UnitTestBase() {
                     .thenReturn(null)
                 whenever(userRepository.findByRrn(rrn))
                     .thenReturn(null)
-                whenever(aes256Encryptor.encrypt(userJoinRequest.password))
+                whenever(passwordEncoder.encode(userJoinRequest.password))
                     .thenReturn("encryptedPassword")
                 whenever(userRepository.save(Mockito.any()))
                     .thenReturn(userJoinRequest.toEntity("encryptedPassword"))
