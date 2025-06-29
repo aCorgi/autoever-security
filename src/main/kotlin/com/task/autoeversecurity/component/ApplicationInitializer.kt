@@ -12,7 +12,8 @@ class ApplicationInitializer(
 ) {
     @PostConstruct
     fun initialize() {
-        // ADMIN 기본 권한을 Redis 에 저장하기 위해 initialize 메서드에서 set
+        // ADMIN 기본 권한을 Redis 에 저장하기 위해 initialize 메서드에서
         basicAuthUserRepository.setAdminInBasicAuthUsers(BASIC_AUTH_ADMIN_NAME, BASIC_AUTH_ADMIN_PASSWORD)
+        basicAuthUserRepository.addAllBasicAuthUsersInUserDetailsManager()
     }
 }

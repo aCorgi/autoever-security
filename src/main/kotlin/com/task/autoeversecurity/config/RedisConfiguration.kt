@@ -1,6 +1,6 @@
 package com.task.autoeversecurity.config
 
-import com.task.autoeversecurity.repository.redis.BasicAuthUserRepository
+import com.task.autoeversecurity.component.BasicAuthUserListener
 import com.task.autoeversecurity.util.BasicAuthUsers
 import com.task.autoeversecurity.util.Constants.Redis.BASIC_AUTH_USERS_CHANNEL
 import org.springframework.context.annotation.Bean
@@ -13,13 +13,13 @@ import org.springframework.data.redis.serializer.StringRedisSerializer
 
 @Configuration
 class RedisConfiguration(
-    private val basicAuthUserRepository: BasicAuthUserRepository,
+    private val basicAuthUserListener: BasicAuthUserListener,
 ) {
     @Bean
     fun redisMessageListener(connectionFactory: RedisConnectionFactory): RedisMessageListenerContainer {
         val container = RedisMessageListenerContainer()
         container.setConnectionFactory(connectionFactory)
-        container.addMessageListener(basicAuthUserRepository, ChannelTopic(BASIC_AUTH_USERS_CHANNEL))
+        container.addMessageListener(basicAuthUserListener, ChannelTopic(BASIC_AUTH_USERS_CHANNEL))
 
         return container
     }
