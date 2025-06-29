@@ -43,7 +43,19 @@ management:
       exposure:
         include: health
 
-basic-auth:
-  admin:
+admin:
+  basic-auth:
     username: admin
     password: $2a$10$Qz49ajcCn2kdVuQesmsrPusnBQzq1QMHGBplKzsGqjSt1r4yOlXXC
+
+api:
+  kakao-talk:
+    base-url: http://localhost:8081
+    basic-auth:
+      username: ${API_KAKAO_TALK_BASIC_AUTH_USERNAME}
+      password: ${API_KAKAO_TALK_BASIC_AUTH_PASSWORD}
+  sms:
+    base-url: http://localhost:8082
+    basic-auth:
+      username: ${API_SMS_BASIC_AUTH_USERNAME}
+      password: ${API_SMS_BASIC_AUTH_PASSWORD}

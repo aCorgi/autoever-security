@@ -11,3 +11,6 @@ class ClientBadRequestException(message: String = "") : ClientException(message)
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
 class ResourceNotFoundException(message: String = "") : ClientException(message)
+
+@ResponseStatus(HttpStatus.UNAUTHORIZED)
+class UnauthorizedException(message: String = "") : ClientException(message)
