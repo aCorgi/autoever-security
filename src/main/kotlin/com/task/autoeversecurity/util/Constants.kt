@@ -10,6 +10,8 @@ object Constants {
         const val INVALID_RRN_FORMAT_EXCEPTION_MESSAGE = "잘못된 주민등록번호 형식입니다."
         const val DUPLICATE_LOGIN_ID_EXCEPTION_MESSAGE = "이미 사용 중인 로그인 ID입니다."
         const val DUPLICATE_RRN_EXCEPTION_MESSAGE = "이미 사용 중인 주민등록번호입니다."
+        const val USER_NOT_FOUND_EXCEPTION_MESSAGE = "사용자를 찾을 수 없습니다."
+        const val PASSWORD_MISMATCH_EXCEPTION_MESSAGE = "비밀번호가 일치하지 않습니다."
     }
 
     const val AES_ALGORITHM = "AES"

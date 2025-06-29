@@ -12,8 +12,10 @@ import com.task.autoeversecurity.util.Constants.Exception.DUPLICATE_LOGIN_ID_EXC
 import com.task.autoeversecurity.util.Constants.Exception.DUPLICATE_RRN_EXCEPTION_MESSAGE
 import com.task.autoeversecurity.util.Constants.Exception.IMPOSSIBLE_PHONE_NUMBER_EXCEPTION_MESSAGE
 import com.task.autoeversecurity.util.Constants.Exception.INVALID_RRN_FORMAT_EXCEPTION_MESSAGE
+import com.task.autoeversecurity.util.Constants.Exception.PASSWORD_MISMATCH_EXCEPTION_MESSAGE
 import com.task.autoeversecurity.util.Constants.Exception.RRN_CONTAINS_HYPHEN_EXCEPTION_MESSAGE
 import com.task.autoeversecurity.util.Constants.Exception.RRN_LENGTH_INVALID_EXCEPTION_MESSAGE
+import com.task.autoeversecurity.util.Constants.Exception.USER_NOT_FOUND_EXCEPTION_MESSAGE
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
@@ -65,10 +67,10 @@ class UserService(
         userRepository.findByLoginId(request.loginId)
             ?.let {
                 if (passwordEncoder.matches(request.password, it.password).not()) {
-                    throw ClientBadRequestException("비밀번호가 일치하지 않습니다.")
+                    throw ClientBadRequestException(PASSWORD_MISMATCH_EXCEPTION_MESSAGE)
                 }
             }
-            ?: throw ResourceNotFoundException("사용자를 찾을 수 없습니다.")
+            ?: throw ResourceNotFoundException(USER_NOT_FOUND_EXCEPTION_MESSAGE)
 
         return getBasicAuthToken(request.loginId, request.password)
     }
