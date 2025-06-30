@@ -37,6 +37,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
+    implementation("ca.pjer:logback-awslogs-appender:1.4.0")
+
     // phone number validation
     implementation("com.googlecode.libphonenumber:libphonenumber:9.0.5")
 
