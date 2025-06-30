@@ -22,6 +22,15 @@ spring:
       port: 6379
       repositories:
         enabled: false
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: ${RABBIT_MQ_USERNAME}
+    password: ${RABBIT_MQ_PASSWORD}
+    listener:
+      simple:
+        prefetch: 2
+        concurrency: 2
 
 springdoc:
   swagger-ui:
@@ -59,3 +68,13 @@ api:
     basic-auth:
       username: ${API_SMS_BASIC_AUTH_USERNAME}
       password: ${API_SMS_BASIC_AUTH_PASSWORD}
+
+rabbit-mq:
+  send-message:
+    exchange: send-message-exchange
+    kakao-talk-message-queue:
+      name: kakao-talk-message-queue
+      routing-key: kakao-talk-message-key
+    sms-message-queue:
+      name: sms-message-queue
+      routing-key: sms-message-key

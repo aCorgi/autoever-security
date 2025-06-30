@@ -16,3 +16,14 @@ services:
     restart: always
     ports:
       - "6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"     # 메시지 통신용 (AMQP)
+      - "15672:15672"   # 관리 UI 접속용
+    environment:
+      RABBITMQ_DEFAULT_USER: corgi
+      RABBITMQ_DEFAULT_PASS: autoever
+    restart: always
