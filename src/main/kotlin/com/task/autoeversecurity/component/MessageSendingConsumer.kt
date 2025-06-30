@@ -8,6 +8,8 @@ import com.task.autoeversecurity.dto.api.SendKakaoTalkApiRequest
 import com.task.autoeversecurity.dto.api.SendSmsApiRequest
 import com.task.autoeversecurity.dto.message.SendKakaoTalkMessageDto
 import com.task.autoeversecurity.dto.message.SendSmsMessageDto
+import com.task.autoeversecurity.util.Constants.Redis.KAKAO_TALK_MESSAGE_RATE_LIMITER_NAME
+import com.task.autoeversecurity.util.Constants.Redis.SMS_MESSAGE_RATE_LIMITER_NAME
 import com.task.autoeversecurity.util.logger
 import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.stereotype.Component
@@ -17,6 +19,7 @@ class MessageSendingConsumer(
     private val objectMapper: ObjectMapper,
     private val kakaoTalkApiClient: KakaoTalkApiClient,
     private val smsApiClient: SmsApiClient,
+    private val rateLimiter: RateLimiter,
     private val messageSendingProducer: MessageSendingProducer,
 ) {
     val log = logger<MessageSendingConsumer>()
@@ -24,6 +27,10 @@ class MessageSendingConsumer(
     @RabbitListener(queues = ["\${rabbit-mq.send-message.kakao-talk-message-queue.name}"])
     fun receiveKakaoTalkMessage(message: String) {
         // 여기서 rate limiter 체크해서 처리 제한도 가능
+        if (rateLimiter.tryAcquire(KAKAO_TALK_MESSAGE_RATE_LIMITER_NAME).not()) {
+            // TODO: DLT message 처리
+            return
+        }
 
         val sendKakaoTalkMessageDto = objectMapper.readValue<SendKakaoTalkMessageDto>(message)
 
@@ -44,6 +51,11 @@ class MessageSendingConsumer(
 
     @RabbitListener(queues = ["\${rabbit-mq.send-message.sms-message-queue.name}"])
     fun receiveSmsMessage(message: String) {
+        if (rateLimiter.tryAcquire(SMS_MESSAGE_RATE_LIMITER_NAME).not()) {
+            // TODO: DLT message 처리
+            return
+        }
+
         val sendSmsMessageDto = objectMapper.readValue<SendSmsMessageDto>(message)
 
         // 여기서 rate limiter 체크해서 처리 제한도 가능

@@ -19,5 +19,9 @@ object Constants {
     object Redis {
         const val BASIC_AUTH_USERS_REDIS_KEY = "BASIC_AUTH_USERS"
         const val BASIC_AUTH_USERS_CHANNEL = "BASIC_AUTH_USERS"
+        const val KAKAO_TALK_MESSAGE_RATE_LIMITER_NAME = "kakao-talk-message-rate-limiter"
+        const val KAKAO_TALK_MESSAGE_RATE_LIMIT = 100L
+        const val SMS_MESSAGE_RATE_LIMITER_NAME = "sms-message-rate-limiter"
+        const val SMS_MESSAGE_RATE_LIMIT = 500L
     }
 }

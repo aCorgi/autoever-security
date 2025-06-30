@@ -37,6 +37,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
+    implementation("org.redisson:redisson-spring-boot-starter:3.50.0")
+
     implementation("ca.pjer:logback-awslogs-appender:1.4.0")
 
     // phone number validation
