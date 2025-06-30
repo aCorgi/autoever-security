@@ -1,26 +1,17 @@
 package com.task.autoeversecurity.config
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.task.autoeversecurity.property.RabbitMQProperties
 import org.springframework.amqp.core.Binding
 import org.springframework.amqp.core.BindingBuilder
 import org.springframework.amqp.core.DirectExchange
 import org.springframework.amqp.core.Queue
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter
-import org.springframework.amqp.support.converter.MessageConverter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
 class RabbitMQConfiguration(
-    private val objectMapper: ObjectMapper,
     private val rabbitMQProperties: RabbitMQProperties,
 ) {
-    @Bean
-    fun jsonMessageConverter(): MessageConverter {
-        return Jackson2JsonMessageConverter(objectMapper)
-    }
-
     @Bean
     fun kakaoTalkMessageQueue(): Queue {
         return Queue(rabbitMQProperties.sendMessage.kakaoTalkMessageQueue.name, true)
