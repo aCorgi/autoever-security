@@ -1,6 +1,7 @@
 package com.task.autoeversecurity.controller
 
 import com.task.autoeversecurity.config.ControllerTestBase
+import com.task.autoeversecurity.dto.AddressDto
 import com.task.autoeversecurity.dto.UserJoinRequest
 import com.task.autoeversecurity.dto.UserLoginRequest
 import com.task.autoeversecurity.util.CommonUtils.getBasicAuthToken
@@ -20,6 +21,12 @@ class UserControllerIT : ControllerTestBase() {
             @Test
             fun `회원가입 성공 시 201 CREATED 를 반환한다`() {
                 // given
+                val addressDto =
+                    AddressDto(
+                        city = "서울시",
+                        district = "관악구",
+                        town = "청룡 7길 50",
+                    )
                 val request =
                     UserJoinRequest(
                         loginId = "testUser",
@@ -27,7 +34,7 @@ class UserControllerIT : ControllerTestBase() {
                         name = "John Doe",
                         rrn = "9101011234212",
                         phoneNumber = "01012345678",
-                        address = "Seoul, Korea",
+                        address = addressDto,
                     )
 
                 // when & then

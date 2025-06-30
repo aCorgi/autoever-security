@@ -1,7 +1,7 @@
 package com.task.autoeversecurity.service
 
 import com.task.autoeversecurity.config.UnitTestBase
-import com.task.autoeversecurity.domain.entity.User
+import com.task.autoeversecurity.dto.AddressDto
 import com.task.autoeversecurity.dto.UserJoinRequest
 import com.task.autoeversecurity.dto.UserLoginRequest
 import com.task.autoeversecurity.exception.ClientBadRequestException
@@ -43,10 +43,15 @@ class UserServiceTest : UnitTestBase() {
                 // given
                 val loginId = "validUser"
                 val password = "securePassword"
-                val name = "John Doe"
+                val name = "이해원"
                 val rrn = "9101011234924"
                 val phoneNumber = "01012345678"
-                val address = "Seoul, Korea"
+                val addressDto =
+                    AddressDto(
+                        city = "서울시",
+                        district = "관악구",
+                        town = "청룡 7길 50",
+                    )
                 val userJoinRequest =
                     UserJoinRequest(
                         loginId = loginId,
@@ -54,7 +59,16 @@ class UserServiceTest : UnitTestBase() {
                         name = name,
                         rrn = rrn,
                         phoneNumber = phoneNumber,
-                        address = address,
+                        address = addressDto,
+                    )
+                val user =
+                    MockUserEntity.of(
+                        loginId = loginId,
+                        password = "encryptedPassword",
+                        name = name,
+                        rrn = rrn,
+                        phoneNumber = phoneNumber,
+                        address = addressDto.toEmbeddable(),
                     )
 
                 whenever(userRepository.findByLoginId(loginId))
@@ -64,7 +78,7 @@ class UserServiceTest : UnitTestBase() {
                 whenever(passwordEncoder.encode(userJoinRequest.password))
                     .thenReturn("encryptedPassword")
                 whenever(userRepository.save(Mockito.any()))
-                    .thenReturn(userJoinRequest.toEntity("encryptedPassword"))
+                    .thenReturn(user)
 
                 // when & then
                 assertDoesNotThrow {
@@ -83,7 +97,12 @@ class UserServiceTest : UnitTestBase() {
                 val name = "John Doe"
                 val rrn = "9101011234924"
                 val phoneNumber = "01012345678"
-                val address = "Seoul, Korea"
+                val addressDto =
+                    AddressDto(
+                        city = "서울시",
+                        district = "관악구",
+                        town = "청룡 7길 50",
+                    )
                 val userJoinRequest =
                     UserJoinRequest(
                         loginId = loginId,
@@ -91,12 +110,20 @@ class UserServiceTest : UnitTestBase() {
                         name = name,
                         rrn = rrn,
                         phoneNumber = phoneNumber,
-                        address = address,
+                        address = addressDto,
                     )
-                val encryptedPassword = "encryptedPassword"
+                val user =
+                    MockUserEntity.of(
+                        loginId = loginId,
+                        password = "encryptedPassword",
+                        name = name,
+                        rrn = rrn,
+                        phoneNumber = phoneNumber,
+                        address = addressDto.toEmbeddable(),
+                    )
 
                 whenever(userRepository.findByLoginId(loginId))
-                    .thenReturn(userJoinRequest.toEntity(encryptedPassword))
+                    .thenReturn(user)
 
                 // when & then
                 assertThrows<ClientBadRequestException> {
@@ -110,10 +137,15 @@ class UserServiceTest : UnitTestBase() {
                 // given
                 val loginId = "validUser"
                 val password = "securePassword"
-                val name = "John Doe"
+                val name = "이해원"
                 val rrn = "9101011234924"
                 val phoneNumber = "01012345678"
-                val address = "Seoul, Korea"
+                val addressDto =
+                    AddressDto(
+                        city = "서울시",
+                        district = "관악구",
+                        town = "청룡 7길 50",
+                    )
                 val userJoinRequest =
                     UserJoinRequest(
                         loginId = loginId,
@@ -121,14 +153,22 @@ class UserServiceTest : UnitTestBase() {
                         name = name,
                         rrn = rrn,
                         phoneNumber = phoneNumber,
-                        address = address,
+                        address = addressDto,
                     )
-                val encryptedPassword = "encryptedPassword"
+                val user =
+                    MockUserEntity.of(
+                        loginId = loginId,
+                        password = "encryptedPassword",
+                        name = name,
+                        rrn = rrn,
+                        phoneNumber = phoneNumber,
+                        address = addressDto.toEmbeddable(),
+                    )
 
                 whenever(userRepository.findByLoginId(loginId))
                     .thenReturn(null)
                 whenever(userRepository.findByRrn(rrn))
-                    .thenReturn(userJoinRequest.toEntity(encryptedPassword))
+                    .thenReturn(user)
 
                 // when & then
                 assertThrows<ClientBadRequestException> {
@@ -189,13 +229,9 @@ class UserServiceTest : UnitTestBase() {
                 val password = "wrongPassword"
                 val encryptedPassword = "encryptedPassword"
                 val user =
-                    User(
+                    MockUserEntity.of(
                         loginId = loginId,
                         password = encryptedPassword,
-                        name = "John Doe",
-                        rrn = "9101011234924",
-                        phoneNumber = "01012345678",
-                        address = "Seoul, Korea",
                     )
 
                 whenever(userRepository.findByLoginId(loginId))
