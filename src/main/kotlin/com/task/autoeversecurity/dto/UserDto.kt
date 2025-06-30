@@ -1,20 +1,26 @@
 package com.task.autoeversecurity.dto
 
 import com.task.autoeversecurity.domain.entity.User
+import jakarta.validation.constraints.NotBlank
 
-// TODO: spring validation 추가
 data class UserJoinRequest(
+    @field:NotBlank
     val loginId: String,
+    @field:NotBlank
     val password: String,
+    @field:NotBlank
     val name: String,
+    @field:NotBlank
     val rrn: String,
+    @field:NotBlank
     val phoneNumber: String,
     val address: AddressDto,
 )
 
-// TODO: spring validation 추가
 data class UserLoginRequest(
+    @field:NotBlank
     val loginId: String,
+    @field:NotBlank
     val password: String,
 )
 

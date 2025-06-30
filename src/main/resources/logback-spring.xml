@@ -29,5 +29,5 @@
             <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
-    <logger name="kr.socar" level="INFO"/>
+    <logger name="com.task" level="INFO"/>
 </configuration>

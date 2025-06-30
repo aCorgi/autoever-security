@@ -6,6 +6,7 @@ import com.task.autoeversecurity.dto.UserJoinRequest
 import com.task.autoeversecurity.dto.UserLoginRequest
 import com.task.autoeversecurity.service.UserService
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.validation.annotation.Validated
@@ -33,14 +34,14 @@ class UserController(
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/join")
     fun join(
-        @RequestBody request: UserJoinRequest,
+        @RequestBody @Valid request: UserJoinRequest,
     ) {
         userService.join(request)
     }
 
     @PostMapping("/login")
     fun login(
-        @RequestBody request: UserLoginRequest,
+        @RequestBody @Valid request: UserLoginRequest,
     ): String {
         return userService.login(request)
     }
