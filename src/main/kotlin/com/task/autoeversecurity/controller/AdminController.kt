@@ -6,6 +6,7 @@ import com.task.autoeversecurity.dto.UserResponse
 import com.task.autoeversecurity.dto.UserUpdateRequest
 import com.task.autoeversecurity.service.AdminService
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
@@ -29,7 +30,7 @@ class AdminController(
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PatchMapping
     fun updateUser(
-        @RequestBody request: UserUpdateRequest,
+        @RequestBody @Valid request: UserUpdateRequest,
     ) {
         adminService.updateUser(request)
     }

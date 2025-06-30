@@ -1,8 +1,10 @@
 package com.task.autoeversecurity.dto
 
 import com.task.autoeversecurity.domain.entity.User
+import jakarta.validation.constraints.Min
 
 data class UserUpdateRequest(
+    @field:Min(1)
     val userId: Int,
     val password: String?,
     val address: AddressDto?,
