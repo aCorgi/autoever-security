@@ -10,18 +10,7 @@ data class UserJoinRequest(
     val rrn: String,
     val phoneNumber: String,
     val address: AddressDto,
-) {
-    fun toEntity(encryptedPassword: String): User {
-        return User(
-            loginId = loginId,
-            password = encryptedPassword,
-            name = name,
-            rrn = rrn,
-            phoneNumber = phoneNumber,
-            address = address.toEmbeddable(),
-        )
-    }
-}
+)
 
 // TODO: spring validation 추가
 data class UserLoginRequest(

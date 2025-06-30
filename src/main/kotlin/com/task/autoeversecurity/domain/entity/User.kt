@@ -26,6 +26,7 @@ class User(
     // 주민등록번호
     @Column(nullable = false, length = 50)
     val rrn: String,
+    age: Int,
     phoneNumber: String,
     address: Address,
 ) : BaseEntity() {
@@ -35,6 +36,10 @@ class User(
 
     @Column(nullable = false, length = 20)
     var phoneNumber: String = phoneNumber
+        protected set
+
+    @Column(nullable = false)
+    var age: Int = age
         protected set
 
     @Embedded

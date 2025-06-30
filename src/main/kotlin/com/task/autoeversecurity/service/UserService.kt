@@ -3,6 +3,7 @@ package com.task.autoeversecurity.service
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.task.autoeversecurity.config.AutoeverMember
 import com.task.autoeversecurity.domain.entity.User
+import com.task.autoeversecurity.dto.AgeGroup
 import com.task.autoeversecurity.dto.MyselfUserResponse
 import com.task.autoeversecurity.dto.UserJoinRequest
 import com.task.autoeversecurity.dto.UserLoginRequest
@@ -24,6 +25,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 
 @Transactional(readOnly = true)
 @Service
@@ -31,6 +33,13 @@ class UserService(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
 ) {
+    fun findByAgeGroup(ageGroup: AgeGroup): List<User> {
+        return userRepository.findByAgeBetween(
+            minAge = ageGroup.minAge,
+            maxAge = ageGroup.maxAge,
+        )
+    }
+
     fun getMyself(autoeverMember: AutoeverMember): MyselfUserResponse {
         val user = findById(autoeverMember.userId)
 
@@ -55,8 +64,19 @@ class UserService(
         // 패스워드 암호화
         val encryptedPassword = passwordEncoder.encode(request.password)
 
+        val userToCreate =
+            User(
+                loginId = request.loginId,
+                password = encryptedPassword,
+                name = request.name,
+                rrn = request.rrn,
+                phoneNumber = request.phoneNumber,
+                age = getAgeFromRrn(request.rrn),
+                address = request.address.toEmbeddable(),
+            )
+
         // User 엔티티 생성 및 저장
-        userRepository.save(request.toEntity(encryptedPassword))
+        userRepository.save(userToCreate)
     }
 
     fun findById(id: Int): User {
@@ -88,6 +108,22 @@ class UserService(
 
     fun getPagedUsers(pageable: Pageable): Page<User> {
         return userRepository.findAll(pageable)
+    }
+
+    private fun getAgeFromRrn(rrn: String): Int {
+        val birthYearTwoDigits = rrn.substring(0, 2).toInt()
+        val genderCode = rrn[6]
+
+        val currentYear = LocalDate.now().year
+
+        val fullBirthYear =
+            when (genderCode) {
+                '1', '2' -> 1900 + birthYearTwoDigits
+                '3', '4' -> 2000 + birthYearTwoDigits
+                else -> throw ClientBadRequestException("Invalid gender code in RRN: $genderCode")
+            }
+
+        return currentYear - fullBirthYear
     }
 
     private fun validatePhoneNumber(phoneNumber: String) {
