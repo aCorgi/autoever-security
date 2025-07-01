@@ -1,6 +1,5 @@
 package com.task.autoeversecurity.component
 
-import com.task.autoeversecurity.exception.ClientBadRequestException
 import com.task.autoeversecurity.util.Constants.Redis.KAKAO_TALK_MESSAGE_RATE_LIMIT
 import com.task.autoeversecurity.util.Constants.Redis.KAKAO_TALK_MESSAGE_RATE_LIMITER_NAME
 import com.task.autoeversecurity.util.Constants.Redis.SMS_MESSAGE_RATE_LIMIT
@@ -22,16 +21,14 @@ class RateLimiter(
         startSmsMessageRateLimiter()
     }
 
-    // FIXME: 추상화
-    fun tryAcquire(limiterName: String): Boolean {
-        return when (limiterName) {
-            KAKAO_TALK_MESSAGE_RATE_LIMITER_NAME -> {
+    fun tryAcquire(rateLimiterType: RateLimiterType): Boolean {
+        return when (rateLimiterType) {
+            RateLimiterType.KAKAO_TALK_MESSAGE -> {
                 kakaoTalkMessageRateLimiter.tryAcquire(3, Duration.ofSeconds(3))
             }
-            SMS_MESSAGE_RATE_LIMITER_NAME -> {
+            RateLimiterType.SMS_MESSAGE -> {
                 smsMessageRateLimiter.tryAcquire(3, Duration.ofSeconds(3))
             }
-            else -> throw ClientBadRequestException("Unknown rate limiter: $limiterName")
         }
     }
 
@@ -49,5 +46,10 @@ class RateLimiter(
             SMS_MESSAGE_RATE_LIMIT,
             Duration.ofMinutes(1),
         )
+    }
+
+    enum class RateLimiterType(val limiterName: String) {
+        KAKAO_TALK_MESSAGE(KAKAO_TALK_MESSAGE_RATE_LIMITER_NAME),
+        SMS_MESSAGE(SMS_MESSAGE_RATE_LIMITER_NAME),
     }
 }

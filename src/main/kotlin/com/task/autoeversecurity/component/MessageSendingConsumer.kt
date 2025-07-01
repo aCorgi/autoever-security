@@ -2,15 +2,15 @@ package com.task.autoeversecurity.component
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.rabbitmq.client.Channel
 import com.task.autoeversecurity.client.KakaoTalkApiClient
 import com.task.autoeversecurity.client.SmsApiClient
 import com.task.autoeversecurity.dto.api.SendKakaoTalkApiRequest
 import com.task.autoeversecurity.dto.api.SendSmsApiRequest
 import com.task.autoeversecurity.dto.message.SendKakaoTalkMessageDto
 import com.task.autoeversecurity.dto.message.SendSmsMessageDto
-import com.task.autoeversecurity.util.Constants.Redis.KAKAO_TALK_MESSAGE_RATE_LIMITER_NAME
-import com.task.autoeversecurity.util.Constants.Redis.SMS_MESSAGE_RATE_LIMITER_NAME
 import com.task.autoeversecurity.util.logger
+import org.springframework.amqp.core.Message
 import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.stereotype.Component
 
@@ -24,15 +24,21 @@ class MessageSendingConsumer(
 ) {
     val log = logger<MessageSendingConsumer>()
 
-    @RabbitListener(queues = ["\${rabbit-mq.send-message.kakao-talk-message-queue.name}"])
-    fun receiveKakaoTalkMessage(message: String) {
-        // 여기서 rate limiter 체크해서 처리 제한도 가능
-        if (rateLimiter.tryAcquire(KAKAO_TALK_MESSAGE_RATE_LIMITER_NAME).not()) {
-            // TODO: DLT message 처리
+    @RabbitListener(queues = ["\${rabbit-mq.send-message.kakao-talk-message-queue.name}"], ackMode = "MANUAL")
+    fun receiveKakaoTalkMessage(
+        message: Message,
+        channel: Channel,
+    ) {
+        val messageBody = String(message.body)
+
+        if (rateLimiter.tryAcquire(RateLimiter.RateLimiterType.KAKAO_TALK_MESSAGE).not()) {
+            log.warn("제한된 카카오톡 메세지 전송 횟수를 초과했습니다. Requeue 합니다.")
+
+            channel.basicNack(message.messageProperties.deliveryTag, false, true)
             return
         }
 
-        val sendKakaoTalkMessageDto = objectMapper.readValue<SendKakaoTalkMessageDto>(message)
+        val sendKakaoTalkMessageDto = objectMapper.readValue<SendKakaoTalkMessageDto>(messageBody)
 
         runCatching {
             kakaoTalkApiClient.sendKakaoTalkMessage(SendKakaoTalkApiRequest(sendKakaoTalkMessageDto))
@@ -50,15 +56,20 @@ class MessageSendingConsumer(
     }
 
     @RabbitListener(queues = ["\${rabbit-mq.send-message.sms-message-queue.name}"])
-    fun receiveSmsMessage(message: String) {
-        if (rateLimiter.tryAcquire(SMS_MESSAGE_RATE_LIMITER_NAME).not()) {
-            // TODO: DLT message 처리
+    fun receiveSmsMessage(
+        message: Message,
+        channel: Channel,
+    ) {
+        val messageBody = String(message.body)
+
+        if (rateLimiter.tryAcquire(RateLimiter.RateLimiterType.SMS_MESSAGE).not()) {
+            log.warn("제한된 SMS 메세지 전송 횟수를 초과했습니다. Requeue 합니다.")
+
+            channel.basicNack(message.messageProperties.deliveryTag, false, true)
             return
         }
 
-        val sendSmsMessageDto = objectMapper.readValue<SendSmsMessageDto>(message)
-
-        // 여기서 rate limiter 체크해서 처리 제한도 가능
+        val sendSmsMessageDto = objectMapper.readValue<SendSmsMessageDto>(messageBody)
 
         runCatching {
             smsApiClient.sendSms(
