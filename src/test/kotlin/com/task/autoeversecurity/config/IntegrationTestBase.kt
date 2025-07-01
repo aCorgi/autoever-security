@@ -3,9 +3,11 @@ package com.task.autoeversecurity.config
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.task.autoeversecurity.AutoeverSecurityApplication
 import jakarta.persistence.EntityManager
+import okhttp3.mockwebserver.MockResponse
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.transaction.PlatformTransactionManager
@@ -18,7 +20,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 @ActiveProfiles("test")
 @ExtendWith(RepositoryContainerExtension::class)
 @SpringBootTest
-abstract class IntegrationTestBase {
+abstract class IntegrationTestBase : MockWebServerTestBase() {
     @Autowired
     protected lateinit var entityManager: EntityManager
 
@@ -34,5 +36,15 @@ abstract class IntegrationTestBase {
 
     private fun closeTransaction(transactionStatus: TransactionStatus) {
         transactionManager.commit(transactionStatus)
+    }
+
+    protected fun getSuccessMockResponse(body: String? = null): MockResponse {
+        return MockResponse()
+            .setResponseCode(HttpStatus.OK.value())
+            .also {
+                if (body != null) {
+                    it.setBody(body)
+                }
+            }
     }
 }

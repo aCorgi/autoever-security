@@ -7,7 +7,10 @@ import com.task.autoeversecurity.dto.message.SendSmsMessageDto
 import com.task.autoeversecurity.property.RabbitMQProperties
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.Awaitility
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
+import org.redisson.api.RedissonClient
 import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import java.time.Duration
@@ -22,6 +25,12 @@ class MessageSendingProducerIT : IntegrationTestBase() {
     private lateinit var rabbitTemplate: RabbitTemplate
 
     @Autowired
+    private lateinit var rateLimiter: RateLimiter
+
+    @Autowired
+    private lateinit var redissonClient: RedissonClient
+
+    @Autowired
     private lateinit var rabbitMQProperties: RabbitMQProperties
 
     private val kakaoTalkQueueName by lazy {
@@ -30,6 +39,16 @@ class MessageSendingProducerIT : IntegrationTestBase() {
 
     private val smsQueueName by lazy {
         rabbitMQProperties.sendMessage.smsMessageQueue.name
+    }
+
+    @BeforeEach
+    fun setLateLimit() {
+        rateLimiter.startMessageRateLimiters()
+    }
+
+    @AfterEach
+    fun deleteLateLimit() {
+        redissonClient.keys.deleteByPattern("redisson_rate_limiter:{*}")
     }
 
     @Nested
