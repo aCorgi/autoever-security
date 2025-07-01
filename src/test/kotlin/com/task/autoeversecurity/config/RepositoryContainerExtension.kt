@@ -65,7 +65,7 @@ class RepositoryContainerExtension : BeforeAllCallback {
 
         System.setProperty(
             "spring.datasource.url",
-            "jdbc:mariadb:aurora://localhost:${
+            "jdbc:mysql://localhost:${
                 mysqlContainer.getMappedPort(
                     MYSQL_PORT,
                 )}/$DATABASE_NAME?useSSL=false&useUnicode=true&characterEncoding=UTF-8",

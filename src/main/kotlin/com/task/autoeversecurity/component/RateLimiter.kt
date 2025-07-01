@@ -24,10 +24,10 @@ class RateLimiter(
     fun tryAcquire(rateLimiterType: RateLimiterType): Boolean {
         return when (rateLimiterType) {
             RateLimiterType.KAKAO_TALK_MESSAGE -> {
-                kakaoTalkMessageRateLimiter.tryAcquire(3, Duration.ofSeconds(3))
+                kakaoTalkMessageRateLimiter.tryAcquire(1, Duration.ofSeconds(2))
             }
             RateLimiterType.SMS_MESSAGE -> {
-                smsMessageRateLimiter.tryAcquire(3, Duration.ofSeconds(3))
+                smsMessageRateLimiter.tryAcquire(1, Duration.ofSeconds(2))
             }
         }
     }

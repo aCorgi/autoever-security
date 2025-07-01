@@ -3,6 +3,7 @@ package com.task.autoeversecurity.config
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.task.autoeversecurity.AutoeverSecurityApplication
 import jakarta.persistence.EntityManager
+import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
@@ -15,6 +16,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 @Testcontainers
 @ContextConfiguration(classes = [AutoeverSecurityApplication::class])
 @ActiveProfiles("test")
+@ExtendWith(RepositoryContainerExtension::class)
 @SpringBootTest
 abstract class IntegrationTestBase {
     @Autowired
