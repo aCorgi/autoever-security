@@ -3,14 +3,21 @@ package com.task.autoeversecurity.controller
 import com.task.autoeversecurity.config.AutoeverAuthority
 import com.task.autoeversecurity.config.ControllerTestBase
 import com.task.autoeversecurity.config.WithMockAutoeverMember
+import com.task.autoeversecurity.dto.UserResponse
 import com.task.autoeversecurity.dto.UserUpdateRequest
+import com.task.autoeversecurity.util.MockUserEntity
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.delete
+import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.patch
 import kotlin.test.Test
 
@@ -182,6 +189,70 @@ class AdminControllerIT : ControllerTestBase() {
                     content = objectMapper.writeValueAsString(request)
                 }.andExpect {
                     status { isBadRequest() }
+                }
+            }
+        }
+    }
+
+    @Nested
+    inner class `회원 목록 조회` {
+        private val url = "/admins"
+
+        @WithMockAutoeverMember(autoeverAuthorities = [AutoeverAuthority.ADMIN])
+        @Nested
+        inner class `성공` {
+            @Test
+            fun `회원 목록 조회에 성공하면 200 OK 와 회원 목록을 반환한다`() {
+                // given
+                val pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "createdAt"))
+                val userResponses =
+                    listOf(
+                        UserResponse(MockUserEntity.of(loginId = "banner1@naver.com")),
+                        UserResponse(MockUserEntity.of(loginId = "banner3@naver.com")),
+                    )
+                val pageResponse = PageImpl(userResponses, pageable, userResponses.size.toLong())
+
+                whenever(adminService.getPagedUsers(pageable))
+                    .thenReturn(pageResponse)
+
+                // when & then
+                mockMvc.get(url) {
+                    param("page", "0")
+                    param("size", "10")
+                    param("sort", "createdAt,desc")
+                }.andExpect {
+                    status { isOk() }
+                    content {
+                        json(objectMapper.writeValueAsString(pageResponse))
+                    }
+                }
+
+                verify(adminService, times(1)).getPagedUsers(pageable)
+            }
+        }
+
+        @Nested
+        inner class `실패` {
+            @Test
+            fun `권한이 없으면 401 오류를 반환한다`() {
+                // when & then
+                mockMvc.get(url) {
+                    param("page", "0")
+                    param("size", "10")
+                }.andExpect {
+                    status { isUnauthorized() }
+                }
+            }
+
+            @WithMockAutoeverMember(autoeverAuthorities = [AutoeverAuthority.USER])
+            @Test
+            fun `어드민 권한이 아니면 403 오류를 반환한다`() {
+                // when & then
+                mockMvc.get(url) {
+                    param("page", "0")
+                    param("size", "10")
+                }.andExpect {
+                    status { isForbidden() }
                 }
             }
         }
