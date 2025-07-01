@@ -63,7 +63,8 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
     testImplementation("org.testcontainers:mysql:$testContainersVersion")
-    testImplementation("org.testcontainers:kafka:$testContainersVersion")
+    testImplementation("org.testcontainers:rabbitmq:$testContainersVersion")
+    testImplementation("org.springframework.boot:spring-boot-starter-amqp")
     testImplementation("org.awaitility:awaitility:4.2.2")
     testRuntimeOnly("mysql:mysql-connector-java:8.0.32")
 }
