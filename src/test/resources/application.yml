@@ -28,8 +28,9 @@ spring:
     password: test
     listener:
       simple:
-        prefetch: 2
+        prefetch: 1
         concurrency: 2
+        auto-startup: false
 
 springdoc:
   swagger-ui:

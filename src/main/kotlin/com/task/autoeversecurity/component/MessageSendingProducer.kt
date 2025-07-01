@@ -6,7 +6,6 @@ import com.task.autoeversecurity.dto.message.SendSmsMessageDto
 import com.task.autoeversecurity.property.RabbitMQProperties
 import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.stereotype.Component
-import org.springframework.stereotype.Service
 
 @Component
 class MessageSendingProducer(

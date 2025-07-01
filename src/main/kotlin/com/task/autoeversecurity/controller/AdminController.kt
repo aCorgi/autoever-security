@@ -38,7 +38,7 @@ class AdminController(
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping
     fun deleteUser(
-        @RequestBody request: UserDeleteRequest,
+        @RequestBody @Valid request: UserDeleteRequest,
     ) {
         adminService.deleteUser(request.userId)
     }

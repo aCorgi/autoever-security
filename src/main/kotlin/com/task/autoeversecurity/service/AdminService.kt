@@ -37,7 +37,7 @@ class AdminService(
             messageSendingProducer.sendKakaoTalkMessage(
                 SendKakaoTalkMessageDto(
                     phone = request.phone,
-                    message = request.message,
+                    content = request.message,
                 ),
             )
         }

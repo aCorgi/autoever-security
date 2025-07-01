@@ -49,7 +49,7 @@ class MessageSendingConsumer(
                 messageSendingProducer.sendSmsMessage(
                     SendSmsMessageDto(
                         phone = sendKakaoTalkMessageDto.phone,
-                        message = sendKakaoTalkMessageDto.message,
+                        content = sendKakaoTalkMessageDto.content,
                     ),
                 )
             }
@@ -74,7 +74,7 @@ class MessageSendingConsumer(
         runCatching {
             smsApiClient.sendSms(
                 phone = sendSmsMessageDto.phone,
-                request = SendSmsApiRequest(sendSmsMessageDto.message),
+                request = SendSmsApiRequest(sendSmsMessageDto.content),
             )
         }
     }

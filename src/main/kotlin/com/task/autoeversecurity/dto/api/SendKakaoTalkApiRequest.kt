@@ -8,6 +8,6 @@ data class SendKakaoTalkApiRequest(
 ) {
     constructor(messageDto: SendKakaoTalkMessageDto) : this(
         phone = messageDto.phone,
-        message = messageDto.message,
+        message = messageDto.content,
     )
 }

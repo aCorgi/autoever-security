@@ -28,7 +28,7 @@ spring:
     password: autoever
     listener:
       simple:
-        prefetch: 2
+        prefetch: 1
         concurrency: 2
 
 springdoc:

@@ -11,6 +11,7 @@ data class UserUpdateRequest(
 )
 
 data class UserDeleteRequest(
+    @field:Min(1)
     val userId: Int,
 )
 

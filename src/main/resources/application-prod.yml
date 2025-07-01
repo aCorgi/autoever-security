@@ -29,7 +29,7 @@ spring:
     password: ${RABBIT_MQ_PASSWORD}
     listener:
       simple:
-        prefetch: 2
+        prefetch: 1
         concurrency: 2
 
 springdoc:
