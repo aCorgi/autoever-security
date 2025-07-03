@@ -13,19 +13,17 @@ import org.springframework.test.context.TestPropertySource
 import java.time.Duration
 import kotlin.test.Test
 
-@TestPropertySource(properties = ["spring.rabbitmq.listener.simple.auto-startup=false"])
+@TestPropertySource(
+    properties = [
+        "spring.rabbitmq.listener.simple.auto-startup=false",
+    ],
+)
 class MessageSendingProducerIT : IntegrationTestBase() {
-    private val kakaoTalkQueueName by lazy {
-        rabbitMQProperties.sendMessage.kakaoTalkMessageQueue.name
-    }
-
-    private val smsQueueName by lazy {
-        rabbitMQProperties.sendMessage.smsMessageQueue.name
-    }
-
     @BeforeEach
     fun setLateLimit() {
         rateLimiter.startMessageRateLimiters()
+        amqpAdmin.purgeQueue(rabbitMQProperties.sendMessage.kakaoTalkMessageQueue.name, false)
+        amqpAdmin.purgeQueue(rabbitMQProperties.sendMessage.smsMessageQueue.name, false)
     }
 
     @AfterEach
@@ -34,13 +32,15 @@ class MessageSendingProducerIT : IntegrationTestBase() {
     }
 
     @Nested
-    inner class `카카오톡 메세지 전송 요청을 MessageQueue 에 produce` {
+    inner class `카카오톡 메세지 전송 요청을 MQ 에 produce` {
         @Nested
         inner class `성공` {
             @Test
-            fun `요청 메세지가 MQ 에 잘 전송되었다`() {
+            fun `MQ 에 잘 전송되었다`() {
                 // given
                 val kakaoTalkMessageSendingDto = SendKakaoTalkMessageDto("01012341923", "카톡왔숑")
+
+                kakaoTalkApiMockWebServer.enqueue(getSuccessMockResponse())
 
                 // when
                 messageSendingProducer.sendKakaoTalkMessage(kakaoTalkMessageSendingDto)
@@ -48,9 +48,9 @@ class MessageSendingProducerIT : IntegrationTestBase() {
                 // then
                 Awaitility.await()
                     .atMost(Duration.ofSeconds(5))
-                    .pollInterval(Duration.ofMillis(200))
+                    .pollInterval(Duration.ofSeconds(1))
                     .untilAsserted {
-                        val message = rabbitTemplate.receive(kakaoTalkQueueName)
+                        val message = rabbitTemplate.receive(rabbitMQProperties.sendMessage.kakaoTalkMessageQueue.name)
                         assertThat(message).isNotNull
                         val messageBody = String(message!!.body)
 
@@ -64,13 +64,15 @@ class MessageSendingProducerIT : IntegrationTestBase() {
     }
 
     @Nested
-    inner class `SMS 메세지 전송 요청을 MessageQueue 에 produce` {
+    inner class `SMS 메세지 전송 요청을 MQ produce` {
         @Nested
         inner class `성공` {
             @Test
-            fun `요청 메세지가 MQ 에 잘 전송되었다`() {
+            fun `MQ 에 잘 전송되었다`() {
                 // given
                 val smsMessageSendingDto = SendSmsMessageDto("01012341923", "문자왔숑")
+
+                smsApiMockWebServer.enqueue(getSuccessMockResponse())
 
                 // when
                 messageSendingProducer.sendSmsMessage(smsMessageSendingDto)
@@ -80,7 +82,7 @@ class MessageSendingProducerIT : IntegrationTestBase() {
                     .atMost(Duration.ofSeconds(5))
                     .pollInterval(Duration.ofSeconds(1))
                     .untilAsserted {
-                        val message = rabbitTemplate.receive(smsQueueName)
+                        val message = rabbitTemplate.receive(rabbitMQProperties.sendMessage.smsMessageQueue.name)
                         assertThat(message).isNotNull
                         val messageBody = String(message!!.body)
 

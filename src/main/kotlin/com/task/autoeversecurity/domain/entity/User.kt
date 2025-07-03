@@ -10,8 +10,6 @@ import jakarta.persistence.Entity
 import jakarta.persistence.Index
 import jakarta.persistence.Table
 
-// 계정/암호/성명/주민등록번호/핸드폰번호/주소 입니다.
-// 핸드폰번호, 주민등록번호는 11자리 등의 자릿수... 구
 @Entity
 @Table(
     indexes = [

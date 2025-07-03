@@ -3,11 +3,9 @@ package com.task.autoeversecurity.component
 import com.task.autoeversecurity.config.IntegrationTestBase
 import com.task.autoeversecurity.dto.message.SendKakaoTalkMessageDto
 import com.task.autoeversecurity.dto.message.SendSmsMessageDto
-import com.task.autoeversecurity.util.Constants
 import org.awaitility.Awaitility
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
@@ -21,6 +19,8 @@ class MessageSendingConsumerIT : IntegrationTestBase() {
     @BeforeEach
     fun setLateLimit() {
         rateLimiter.startMessageRateLimiters()
+        amqpAdmin.purgeQueue(rabbitMQProperties.sendMessage.kakaoTalkMessageQueue.name, false)
+        amqpAdmin.purgeQueue(rabbitMQProperties.sendMessage.smsMessageQueue.name, false)
     }
 
     @AfterEach
@@ -63,11 +63,6 @@ class MessageSendingConsumerIT : IntegrationTestBase() {
                                 ),
                             )
                     }
-            }
-
-            @DisplayName("카카오 메세지 1분에 ${Constants.Redis.KAKAO_TALK_MESSAGE_RATE_LIMIT} 회 이상 호출하면 nack 상태로 requeue 한다")
-            @Test
-            fun `제한된 메세지 전송 횟수를 초과하면, nack 상태로 requeue 한다`() {
             }
         }
     }

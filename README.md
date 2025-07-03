@@ -125,5 +125,5 @@ http://localhost:8080/v1/swagger-ui/index.html
 docker compose 명령어
 
 ```
-docker compose up
+docker compose up -d
 ```

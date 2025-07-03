@@ -4,10 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.task.autoeversecurity.AutoeverSecurityApplication
 import com.task.autoeversecurity.component.MessageSendingProducer
 import com.task.autoeversecurity.component.RateLimiter
+import com.task.autoeversecurity.property.RabbitMQProperties
 import jakarta.persistence.EntityManager
 import okhttp3.mockwebserver.MockResponse
 import org.junit.jupiter.api.extension.ExtendWith
 import org.redisson.api.RedissonClient
+import org.springframework.amqp.core.AmqpAdmin
 import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -37,6 +39,12 @@ abstract class IntegrationTestBase : MockWebServerTestBase() {
 
     @Autowired
     protected lateinit var rabbitTemplate: RabbitTemplate
+
+    @Autowired
+    protected lateinit var rabbitMQProperties: RabbitMQProperties
+
+    @Autowired
+    protected lateinit var amqpAdmin: AmqpAdmin
 
     @Autowired
     protected lateinit var redissonClient: RedissonClient

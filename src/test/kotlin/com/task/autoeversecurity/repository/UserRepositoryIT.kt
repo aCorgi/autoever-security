@@ -11,7 +11,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class UserRepositoryIT : IntegrationTestBase() {
-
     @Autowired
     private lateinit var userRepository: UserRepository
 
