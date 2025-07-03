@@ -42,10 +42,6 @@ class UserControllerIT : ControllerTestBase() {
 
                 whenever(userService.getMyself(autoeverMember))
                     .thenReturn(response)
-                whenever(aes256EncryptionManager.decrypt(user.rrn))
-                    .thenReturn("decryptedRrn")
-                whenever(aes256EncryptionManager.decrypt(user.phoneNumber))
-                    .thenReturn("decryptedPhoneNumber")
 
                 // when & then
                 mockMvc.get(url)
