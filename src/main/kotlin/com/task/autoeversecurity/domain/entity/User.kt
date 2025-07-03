@@ -1,6 +1,5 @@
 package com.task.autoeversecurity.domain.entity
 
-import com.task.autoeversecurity.component.Aes256EncryptionManager
 import com.task.autoeversecurity.domain.BaseEntity
 import com.task.autoeversecurity.domain.embeddable.Address
 import com.task.autoeversecurity.dto.UserJoinRequest
@@ -10,7 +9,6 @@ import jakarta.persistence.Embedded
 import jakarta.persistence.Entity
 import jakarta.persistence.Index
 import jakarta.persistence.Table
-import org.springframework.security.crypto.password.PasswordEncoder
 
 // 계정/암호/성명/주민등록번호/핸드폰번호/주소 입니다.
 // 핸드폰번호, 주민등록번호는 11자리 등의 자릿수... 구
@@ -36,15 +34,16 @@ class User(
 ) : BaseEntity() {
     constructor(
         request: UserJoinRequest,
-        passwordEncoder: PasswordEncoder,
-        aes256EncryptionManager: Aes256EncryptionManager,
+        encryptedPassword: String,
+        encryptedRrn: String,
+        encryptedPhoneNumber: String,
     ) : this(
         loginId = request.loginId,
-        password = passwordEncoder.encode(request.password),
+        password = encryptedPassword,
         name = request.name,
-        rrn = aes256EncryptionManager.encrypt(request.rrn),
+        rrn = encryptedRrn,
         age = getAgeFromRrn(request.rrn),
-        phoneNumber = aes256EncryptionManager.encrypt(request.phoneNumber),
+        phoneNumber = encryptedPhoneNumber,
         address = request.address.toEmbeddable(),
     )
 

@@ -1,6 +1,5 @@
 package com.task.autoeversecurity.dto
 
-import com.task.autoeversecurity.component.Aes256EncryptionManager
 import com.task.autoeversecurity.domain.entity.User
 import jakarta.validation.constraints.NotBlank
 
@@ -37,15 +36,16 @@ data class MyselfUserResponse(
 ) {
     constructor(
         user: User,
-        aes256EncryptionManager: Aes256EncryptionManager,
+        decryptedRrn: String,
+        decryptedPhoneNumber: String,
     ) : this(
         id = user.id,
         loginId = user.loginId,
         password = user.password,
         name = user.name,
-        rrn = aes256EncryptionManager.decrypt(user.rrn),
+        rrn = decryptedRrn,
         age = user.age,
-        phoneNumber = aes256EncryptionManager.decrypt(user.phoneNumber),
+        phoneNumber = decryptedPhoneNumber,
         city = user.address.city,
     )
 }

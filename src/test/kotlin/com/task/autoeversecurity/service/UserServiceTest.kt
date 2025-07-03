@@ -90,6 +90,10 @@ class UserServiceTest : UnitTestBase() {
                     .thenReturn(null)
                 whenever(passwordEncoder.encode(userJoinRequest.password))
                     .thenReturn("encryptedPassword")
+                whenever(aes256EncryptionManager.encrypt(rrn))
+                    .thenReturn("encryptedRrn")
+                whenever(aes256EncryptionManager.encrypt(phoneNumber))
+                    .thenReturn("encryptedPhoneNumber")
                 whenever(userRepository.save(Mockito.any()))
                     .thenReturn(user)
 
@@ -368,6 +372,10 @@ class UserServiceTest : UnitTestBase() {
 
             whenever(userRepository.findById(userId))
                 .thenReturn(Optional.of(user))
+            whenever(aes256EncryptionManager.decrypt(user.rrn))
+                .thenReturn("decryptedRrn")
+            whenever(aes256EncryptionManager.decrypt(user.phoneNumber))
+                .thenReturn("decryptedPhoneNumber")
 
             // when
             val result = userService.getMyself(autoeverMember)

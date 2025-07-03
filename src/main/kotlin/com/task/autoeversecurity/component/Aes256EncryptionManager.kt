@@ -1,6 +1,6 @@
 package com.task.autoeversecurity.component
 
-import com.task.autoeversecurity.property.AES256Properties
+import com.task.autoeversecurity.property.Aes256Properties
 import com.task.autoeversecurity.util.Constants.AES_ALGORITHM
 import org.springframework.stereotype.Component
 import java.security.SecureRandom
@@ -11,7 +11,7 @@ import javax.crypto.spec.SecretKeySpec
 
 @Component
 class Aes256EncryptionManager(
-    private val aes256Properties: AES256Properties,
+    private val aes256Properties: Aes256Properties,
 ) {
     fun encrypt(plainText: String): String {
         val keySpec = createKeySpec()

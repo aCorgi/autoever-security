@@ -30,13 +30,22 @@ class UserControllerIT : ControllerTestBase() {
             fun `유효한 인증 정보로 내 정보를 조회하면 200 OK 를 반환한다`() {
                 // given
                 val user = MockUserEntity.of()
-                val response = MyselfUserResponse(user)
+                val response =
+                    MyselfUserResponse(
+                        user = user,
+                        decryptedRrn = "decryptedRrn",
+                        decryptedPhoneNumber = "decryptedPhoneNumber",
+                    )
                 val autoeverMember =
                     SecurityContextHolder.getContext().authentication
                         .principal as AutoeverMember
 
                 whenever(userService.getMyself(autoeverMember))
                     .thenReturn(response)
+                whenever(aes256EncryptionManager.decrypt(user.rrn))
+                    .thenReturn("decryptedRrn")
+                whenever(aes256EncryptionManager.decrypt(user.phoneNumber))
+                    .thenReturn("decryptedPhoneNumber")
 
                 // when & then
                 mockMvc.get(url)
