@@ -1,5 +1,6 @@
 package com.task.autoeversecurity.service
 
+import com.task.autoeversecurity.component.Aes256EncryptionManager
 import com.task.autoeversecurity.config.AutoeverAuthority
 import com.task.autoeversecurity.config.AutoeverMember
 import com.task.autoeversecurity.config.UnitTestBase
@@ -42,6 +43,9 @@ class UserServiceTest : UnitTestBase() {
 
     @Mock
     private lateinit var passwordEncoder: PasswordEncoder
+
+    @Mock
+    private lateinit var aes256EncryptionManager: Aes256EncryptionManager
 
     @Nested
     inner class `회원가입` {

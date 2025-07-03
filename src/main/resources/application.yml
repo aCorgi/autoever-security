@@ -77,3 +77,8 @@ rabbit-mq:
     sms-message-queue:
       name: sms-message-queue
       routing-key: sms-message-key
+
+aes:
+  iv-size: 16
+  secret-key: "0123456789abcdef0123456789fedcba"
+  algorithm: "AES/CBC/PKCS5Padding"

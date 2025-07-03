@@ -1,12 +1,16 @@
 package com.task.autoeversecurity.domain.entity
 
+import com.task.autoeversecurity.component.Aes256EncryptionManager
 import com.task.autoeversecurity.domain.BaseEntity
 import com.task.autoeversecurity.domain.embeddable.Address
+import com.task.autoeversecurity.dto.UserJoinRequest
+import com.task.autoeversecurity.util.UserUtils.getAgeFromRrn
 import jakarta.persistence.Column
 import jakarta.persistence.Embedded
 import jakarta.persistence.Entity
 import jakarta.persistence.Index
 import jakarta.persistence.Table
+import org.springframework.security.crypto.password.PasswordEncoder
 
 // 계정/암호/성명/주민등록번호/핸드폰번호/주소 입니다.
 // 핸드폰번호, 주민등록번호는 11자리 등의 자릿수... 구
@@ -24,17 +28,31 @@ class User(
     @Column(nullable = false, length = 100)
     val name: String,
     // 주민등록번호
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 500)
     val rrn: String,
     age: Int,
     phoneNumber: String,
     address: Address,
 ) : BaseEntity() {
+    constructor(
+        request: UserJoinRequest,
+        passwordEncoder: PasswordEncoder,
+        aes256EncryptionManager: Aes256EncryptionManager,
+    ) : this(
+        loginId = request.loginId,
+        password = passwordEncoder.encode(request.password),
+        name = request.name,
+        rrn = aes256EncryptionManager.encrypt(request.rrn),
+        age = getAgeFromRrn(request.rrn),
+        phoneNumber = aes256EncryptionManager.encrypt(request.phoneNumber),
+        address = request.address.toEmbeddable(),
+    )
+
     @Column(nullable = false, length = 500)
     var password: String = password
         protected set
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 500)
     var phoneNumber: String = phoneNumber
         protected set
 
