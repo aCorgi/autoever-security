@@ -55,6 +55,15 @@ abstract class IntegrationTestBase : MockWebServerTestBase() {
         transactionManager.commit(transactionStatus)
     }
 
+    protected fun <T> transactional(action: () -> T): T {
+        val status = openTransaction()
+        try {
+            return action()
+        } finally {
+            closeTransaction(status)
+        }
+    }
+
     protected fun getSuccessMockResponse(body: String? = null): MockResponse {
         return MockResponse()
             .setResponseCode(HttpStatus.OK.value())
