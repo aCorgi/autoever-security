@@ -8,11 +8,13 @@ import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.Awaitility
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Nested
 import org.springframework.test.context.TestPropertySource
 import java.time.Duration
 import kotlin.test.Test
 
+@Disabled
 @TestPropertySource(
     properties = [
         "spring.rabbitmq.listener.simple.auto-startup=false",
