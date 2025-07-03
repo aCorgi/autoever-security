@@ -48,6 +48,7 @@ class AdminController(
         return adminService.getPagedUsers(pageable)
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/messages/kakao-talk/age-group")
     fun sendKakaoTalkMessageByAgeGroup(
         @RequestBody kakaoTalkMessageSendingByAgeGroupRequest: KakaoTalkMessageSendingByAgeGroupRequest,
