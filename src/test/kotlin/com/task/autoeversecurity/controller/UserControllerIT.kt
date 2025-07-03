@@ -59,6 +59,16 @@ class UserControllerIT : ControllerTestBase() {
                         status { isUnauthorized() }
                     }
             }
+
+            @WithMockAutoeverMember(autoeverAuthorities = [AutoeverAuthority.ADMIN])
+            @Test
+            fun `사용자 권한이 아니면 403 오류를 반환한다`() {
+                // when & then
+                mockMvc.get(url)
+                    .andExpect {
+                        status { isForbidden() }
+                    }
+            }
         }
     }
 
