@@ -21,9 +21,9 @@ class MockAutoeverMemberSecurityContextFactory : WithSecurityContextFactory<With
 
         val authentication =
             UsernamePasswordAuthenticationToken(
-                autoeverMember, // principal
-                null, // credentials (보통 테스트에서는 null 처리)
-                authorities, // 권한 목록
+                autoeverMember,
+                null,
+                authorities,
             )
 
         return SecurityContextHolder.createEmptyContext()

@@ -1,7 +1,10 @@
 package com.task.autoeversecurity.service
 
+import com.task.autoeversecurity.config.AutoeverAuthority
+import com.task.autoeversecurity.config.AutoeverMember
 import com.task.autoeversecurity.config.UnitTestBase
 import com.task.autoeversecurity.dto.AddressDto
+import com.task.autoeversecurity.dto.AgeGroup
 import com.task.autoeversecurity.dto.UserJoinRequest
 import com.task.autoeversecurity.dto.UserLoginRequest
 import com.task.autoeversecurity.exception.ClientBadRequestException
@@ -18,9 +21,15 @@ import org.junit.jupiter.api.assertThrows
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import org.springframework.security.crypto.password.PasswordEncoder
-import java.util.Base64
+import java.util.Optional
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -183,6 +192,7 @@ class UserServiceTest : UnitTestBase() {
     inner class `로그인` {
         @Nested
         inner class `성공` {
+            @OptIn(ExperimentalEncodingApi::class)
             @Test
             fun `유효한 로그인 ID와 비밀번호로 로그인에 성공한다`() {
                 // given
@@ -200,7 +210,7 @@ class UserServiceTest : UnitTestBase() {
                 val token = userService.login(UserLoginRequest(loginId, password))
 
                 // then
-                assertEquals("Basic ${Base64.getEncoder().encodeToString("$loginId:$password".toByteArray())}", token)
+                assertEquals("Basic ${Base64.encode("$loginId:$password".encodeToByteArray())}", token)
             }
         }
 
@@ -245,6 +255,143 @@ class UserServiceTest : UnitTestBase() {
                 }
                     .also { assertEquals(it.message, PASSWORD_MISMATCH_EXCEPTION_MESSAGE) }
             }
+        }
+    }
+
+    @Nested
+    inner class `회원 삭제` {
+        @Nested
+        inner class `성공` {
+            @Test
+            fun `존재하는 회원 ID로 삭제에 성공한다`() {
+                // given
+                val userId = 1
+                val user = MockUserEntity.of(id = userId)
+
+                whenever(userRepository.findById(userId))
+                    .thenReturn(Optional.of(user))
+
+                // when & then
+                assertDoesNotThrow {
+                    userService.deleteById(userId)
+                }
+
+                verify(userRepository, times(1))
+                    .deleteById(userId)
+            }
+        }
+
+        @Nested
+        inner class `실패` {
+            @Test
+            fun `존재하지 않는 회원 ID로 삭제 시 예외를 던진다`() {
+                // given
+                val userId = 999
+
+                whenever(userRepository.findById(userId))
+                    .thenReturn(Optional.empty())
+
+                // when & then
+                assertThrows<ResourceNotFoundException> {
+                    userService.deleteById(userId)
+                }
+                    .also { assertEquals(it.message, USER_NOT_FOUND_EXCEPTION_MESSAGE) }
+            }
+        }
+    }
+
+    @Nested
+    inner class `연령대별 회원 조회` {
+        @Test
+        fun `유효한 연령대 값으로 회원 목록을 조회한다`() {
+            // given
+            val ageGroup = AgeGroup.AGE_10S
+            val users =
+                listOf(
+                    MockUserEntity.of(age = 25),
+                    MockUserEntity.of(age = 28),
+                )
+
+            whenever(userRepository.findByAgeBetween(ageGroup.minAge, ageGroup.maxAge))
+                .thenReturn(users)
+
+            // when
+            val result = userService.findByAgeGroup(ageGroup)
+
+            // then
+            assertEquals(users, result)
+            verify(userRepository, times(1)).findByAgeBetween(ageGroup.minAge, ageGroup.maxAge)
+        }
+    }
+
+    @Nested
+    inner class `회원 목록 페이징 조회` {
+        @Test
+        fun `유효한 Pageable 로 회원 목록을 조회한다`() {
+            // given
+            val pageable = Pageable.ofSize(10).withPage(0)
+            val users =
+                listOf(
+                    MockUserEntity.of(id = 1),
+                    MockUserEntity.of(id = 2),
+                )
+            val pageResponse = PageImpl(users, pageable, users.size.toLong())
+
+            whenever(userRepository.findAll(pageable))
+                .thenReturn(pageResponse)
+
+            // when
+            val result = userService.getPagedUsers(pageable)
+
+            // then
+            assertEquals(pageResponse, result)
+        }
+    }
+
+    @Nested
+    inner class `회원 정보 조회` {
+        @Test
+        fun `유효한 AutoeverMember 로 회원 정보를 조회한다`() {
+            // given
+            val userId = 1
+            val user = MockUserEntity.of(id = userId)
+            val autoeverMember =
+                AutoeverMember(
+                    userId = userId,
+                    loginId = user.loginId,
+                    roles = listOf(AutoeverAuthority.USER),
+                )
+
+            whenever(userRepository.findById(userId))
+                .thenReturn(Optional.of(user))
+
+            // when
+            val result = userService.getMyself(autoeverMember)
+
+            // then
+            assertEquals(user.id, result.id)
+            assertEquals(user.name, result.name)
+        }
+
+        @Test
+        fun `존재하지 않는 회원 ID로 조회 시 예외를 던진다`() {
+            // given
+            val userId = 999
+            val autoeverMember =
+                AutoeverMember(
+                    userId = userId,
+                    loginId = "anonymous@naver.com",
+                    roles = listOf(AutoeverAuthority.USER),
+                )
+
+            whenever(userRepository.findById(userId))
+                .thenReturn(Optional.empty())
+
+            // when & then
+            assertThrows<ResourceNotFoundException> {
+                userService.getMyself(autoeverMember)
+            }
+                .also { assertEquals(it.message, USER_NOT_FOUND_EXCEPTION_MESSAGE) }
         }
     }
 }

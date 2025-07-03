@@ -5,6 +5,7 @@ import com.task.autoeversecurity.domain.entity.User
 
 object MockUserEntity {
     fun of(
+        id: Int = 0,
         loginId: String = "testUser",
         password: String = "password123",
         name: String = "Test User",
@@ -27,5 +28,8 @@ object MockUserEntity {
             age = age,
             address = address,
         )
+            .apply {
+                this.id = id
+            }
     }
 }
