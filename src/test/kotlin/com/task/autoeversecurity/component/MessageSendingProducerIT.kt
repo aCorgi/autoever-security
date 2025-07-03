@@ -4,35 +4,17 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.task.autoeversecurity.config.IntegrationTestBase
 import com.task.autoeversecurity.dto.message.SendKakaoTalkMessageDto
 import com.task.autoeversecurity.dto.message.SendSmsMessageDto
-import com.task.autoeversecurity.property.RabbitMQProperties
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.Awaitility
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
-import org.redisson.api.RedissonClient
-import org.springframework.amqp.rabbit.core.RabbitTemplate
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.test.context.TestPropertySource
 import java.time.Duration
 import kotlin.test.Test
 
-// @TestPropertySource(properties = ["spring.rabbitmq.listener.simple.auto-startup=false"])
+@TestPropertySource(properties = ["spring.rabbitmq.listener.simple.auto-startup=false"])
 class MessageSendingProducerIT : IntegrationTestBase() {
-    @Autowired
-    private lateinit var messageSendingProducer: MessageSendingProducer
-
-    @Autowired
-    private lateinit var rabbitTemplate: RabbitTemplate
-
-    @Autowired
-    private lateinit var rateLimiter: RateLimiter
-
-    @Autowired
-    private lateinit var redissonClient: RedissonClient
-
-    @Autowired
-    private lateinit var rabbitMQProperties: RabbitMQProperties
-
     private val kakaoTalkQueueName by lazy {
         rabbitMQProperties.sendMessage.kakaoTalkMessageQueue.name
     }

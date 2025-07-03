@@ -3,39 +3,21 @@ package com.task.autoeversecurity.component
 import com.task.autoeversecurity.config.IntegrationTestBase
 import com.task.autoeversecurity.dto.message.SendKakaoTalkMessageDto
 import com.task.autoeversecurity.dto.message.SendSmsMessageDto
-import com.task.autoeversecurity.property.RabbitMQProperties
+import com.task.autoeversecurity.util.Constants
 import org.awaitility.Awaitility
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import org.redisson.api.RedissonClient
-import org.springframework.amqp.rabbit.core.RabbitTemplate
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.TestPropertySource
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import java.time.Duration
 import kotlin.test.Test
 
 @TestPropertySource(properties = ["spring.rabbitmq.listener.simple.auto-startup=true"])
 class MessageSendingConsumerIT : IntegrationTestBase() {
-    @Autowired
-    private lateinit var rabbitTemplate: RabbitTemplate
-
-    @Autowired
-    private lateinit var rabbitMQProperties: RabbitMQProperties
-
-    @Autowired
-    private lateinit var redissonClient: RedissonClient
-
-    @MockitoSpyBean
-    private lateinit var rateLimiter: RateLimiter
-
-    @MockitoSpyBean
-    private lateinit var messageSendingProducer: MessageSendingProducer
-
     @BeforeEach
     fun setLateLimit() {
         rateLimiter.startMessageRateLimiters()
@@ -81,6 +63,11 @@ class MessageSendingConsumerIT : IntegrationTestBase() {
                                 ),
                             )
                     }
+            }
+
+            @DisplayName("카카오 메세지 1분에 ${Constants.Redis.KAKAO_TALK_MESSAGE_RATE_LIMIT} 회 이상 호출하면 nack 상태로 requeue 한다")
+            @Test
+            fun `제한된 메세지 전송 횟수를 초과하면, nack 상태로 requeue 한다`() {
             }
         }
     }

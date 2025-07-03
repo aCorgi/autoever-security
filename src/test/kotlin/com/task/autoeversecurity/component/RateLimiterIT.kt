@@ -7,17 +7,9 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
-import org.redisson.api.RedissonClient
-import org.springframework.beans.factory.annotation.Autowired
 import kotlin.test.Test
 
 class RateLimiterIT : IntegrationTestBase() {
-    @Autowired
-    private lateinit var rateLimiter: RateLimiter
-
-    @Autowired
-    private lateinit var redissonClient: RedissonClient
-
     @BeforeEach
     fun setUp() {
         redissonClient.keys.deleteByPattern("redisson_rate_limiter:{*}")

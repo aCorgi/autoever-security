@@ -3,6 +3,8 @@ package com.task.autoeversecurity.controller
 import com.task.autoeversecurity.config.AutoeverAuthority
 import com.task.autoeversecurity.config.ControllerTestBase
 import com.task.autoeversecurity.config.WithMockAutoeverMember
+import com.task.autoeversecurity.dto.AgeGroup
+import com.task.autoeversecurity.dto.KakaoTalkMessageSendingByAgeGroupRequest
 import com.task.autoeversecurity.dto.UserResponse
 import com.task.autoeversecurity.dto.UserUpdateRequest
 import com.task.autoeversecurity.util.MockUserEntity
@@ -19,6 +21,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.patch
+import org.springframework.test.web.servlet.post
 import kotlin.test.Test
 
 class AdminControllerIT : ControllerTestBase() {
@@ -251,6 +254,73 @@ class AdminControllerIT : ControllerTestBase() {
                 mockMvc.get(url) {
                     param("page", "0")
                     param("size", "10")
+                }.andExpect {
+                    status { isForbidden() }
+                }
+            }
+        }
+    }
+
+    @Nested
+    inner class `연령대별 카카오톡 메시지 전송` {
+        private val url = "/admins/messages/kakao-talk/age-group"
+
+        @WithMockAutoeverMember(autoeverAuthorities = [AutoeverAuthority.ADMIN])
+        @Nested
+        inner class `성공` {
+            @Test
+            fun `연령대별 메시지 전송에 성공하면 204 NO CONTENT 를 반환한다`() {
+                // given
+                val request =
+                    KakaoTalkMessageSendingByAgeGroupRequest(
+                        ageGroup = AgeGroup.AGE_10S,
+                    )
+
+                // when & then
+                mockMvc.post(url) {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = objectMapper.writeValueAsString(request)
+                }.andExpect {
+                    status { isNoContent() }
+                }
+
+                verify(adminService, times(1))
+                    .sendKakaoMessageByAgeGroup(request.ageGroup)
+            }
+        }
+
+        @Nested
+        inner class `실패` {
+            @Test
+            fun `권한이 없으면 401 오류를 반환한다`() {
+                // given
+                val request =
+                    KakaoTalkMessageSendingByAgeGroupRequest(
+                        ageGroup = AgeGroup.AGE_10S,
+                    )
+
+                // when & then
+                mockMvc.post(url) {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = objectMapper.writeValueAsString(request)
+                }.andExpect {
+                    status { isUnauthorized() }
+                }
+            }
+
+            @WithMockAutoeverMember(autoeverAuthorities = [AutoeverAuthority.USER])
+            @Test
+            fun `어드민 권한이 아니면 403 오류를 반환한다`() {
+                // given
+                val request =
+                    KakaoTalkMessageSendingByAgeGroupRequest(
+                        ageGroup = AgeGroup.AGE_10S,
+                    )
+
+                // when & then
+                mockMvc.post(url) {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = objectMapper.writeValueAsString(request)
                 }.andExpect {
                     status { isForbidden() }
                 }
